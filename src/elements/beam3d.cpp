@@ -3,7 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <utility>
-
+#include <carambola/dof.hpp>
 
 namespace carambola {
 
@@ -305,5 +305,108 @@ Beam3D::stiffness_matrix() const
         * K_local
         * T;
 }
+
+
+Eigen::Matrix<double, 12, 1>
+Beam3D::element_displacements(
+    const Eigen::VectorXd& displacements
+) const
+{
+    const std::size_t i =
+        node_start_->id();
+
+    const std::size_t j =
+        node_end_->id();
+
+    Eigen::Matrix<double, 12, 1> u;
+
+    u <<
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(i, Dof::UX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(i, Dof::UY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(i, Dof::UZ)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(i, Dof::RX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(i, Dof::RY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(i, Dof::RZ)
+            )
+        ),
+
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(j, Dof::UX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(j, Dof::UY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(j, Dof::UZ)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(j, Dof::RX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(j, Dof::RY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(j, Dof::RZ)
+            )
+        );
+
+    return u;
+}
+
+Eigen::Matrix<double, 12, 1>
+Beam3D::local_displacements(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return transformation_matrix()
+        * element_displacements(
+            displacements
+        );
+}
+
+Eigen::Matrix<double, 12, 1>
+Beam3D::local_end_forces(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return local_stiffness_matrix()
+        * local_displacements(
+            displacements
+        );
+}
+
 
 } // namespace carambola

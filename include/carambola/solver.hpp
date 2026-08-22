@@ -5,6 +5,7 @@
 #include <carambola/elements/truss3d.hpp>
 #include <carambola/model.hpp>
 #include <carambola/node.hpp>
+#include <carambola/elements/beam3d.hpp>
 
 namespace carambola {
 
@@ -49,6 +50,36 @@ public:
     Eigen::Vector3d node_moment_reaction(
         const Node& node
     ) const;
+
+    Eigen::Matrix<double, 12, 1>
+      beam_local_end_forces(
+          const Beam3D& beam
+      ) const;
+
+      double beam_axial_force(
+          const Beam3D& beam
+      ) const;
+
+      double beam_torsion(
+          const Beam3D& beam
+      ) const;
+
+      double beam_shear_y(
+          const Beam3D& beam
+      ) const;
+
+      double beam_shear_z(
+          const Beam3D& beam
+      ) const;
+
+      double beam_moment_y(
+          const Beam3D& beam
+      ) const;
+
+      double beam_moment_z(
+          const Beam3D& beam
+      ) const;
+
 
 private:
     Eigen::VectorXd displacements_;

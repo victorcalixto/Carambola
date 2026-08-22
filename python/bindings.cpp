@@ -394,7 +394,42 @@ PYBIND11_MODULE(_carambola, m)
             "node_moment_reaction",
             &carambola::AnalysisResult::node_moment_reaction,
             py::arg("node")
-        );
+        )
+        .def(
+    "beam_local_end_forces",
+    &carambola::AnalysisResult::beam_local_end_forces,
+    py::arg("beam")
+    )
+      .def(
+          "beam_axial_force",
+          &carambola::AnalysisResult::beam_axial_force,
+          py::arg("beam")
+      )
+      .def(
+          "beam_torsion",
+          &carambola::AnalysisResult::beam_torsion,
+          py::arg("beam")
+      )
+      .def(
+          "beam_shear_y",
+          &carambola::AnalysisResult::beam_shear_y,
+          py::arg("beam")
+      )
+      .def(
+          "beam_shear_z",
+          &carambola::AnalysisResult::beam_shear_z,
+          py::arg("beam")
+      )
+      .def(
+          "beam_moment_y",
+          &carambola::AnalysisResult::beam_moment_y,
+          py::arg("beam")
+      )
+      .def(
+          "beam_moment_z",
+          &carambola::AnalysisResult::beam_moment_z,
+          py::arg("beam")
+      );
 
     py::class_<carambola::LinearStaticSolver>(
       m,
@@ -465,5 +500,21 @@ PYBIND11_MODULE(_carambola, m)
     .def(
         "stiffness_matrix",
         &carambola::Beam3D::stiffness_matrix
+    )
+
+    .def(
+    "element_displacements",
+    &carambola::Beam3D::element_displacements,
+    py::arg("displacements")
+      )
+    .def(
+        "local_displacements",
+        &carambola::Beam3D::local_displacements,
+        py::arg("displacements")
+    )
+    .def(
+        "local_end_forces",
+        &carambola::Beam3D::local_end_forces,
+        py::arg("displacements")
     );
 }

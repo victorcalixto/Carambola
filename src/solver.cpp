@@ -4,6 +4,9 @@
 
 #include <Eigen/SparseCholesky>
 
+#include <carambola/elements/beam3d.hpp>
+
+
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -383,5 +386,77 @@ AnalysisResult LinearStaticSolver::solve() const
         std::move(reactions)
     );
 }
+
+Eigen::Matrix<double, 12, 1>
+AnalysisResult::beam_local_end_forces(
+    const Beam3D& beam
+) const
+{
+    return beam.local_end_forces(
+        displacements_
+    );
+}
+
+double AnalysisResult::beam_axial_force(
+    const Beam3D& beam
+) const
+{
+    const auto f =
+        beam_local_end_forces(beam);
+
+    return f(6);
+}
+
+double AnalysisResult::beam_torsion(
+    const Beam3D& beam
+) const
+{
+    const auto f =
+        beam_local_end_forces(beam);
+
+    return f(9);
+}
+
+double AnalysisResult::beam_shear_y(
+    const Beam3D& beam
+) const
+{
+    const auto f =
+        beam_local_end_forces(beam);
+
+    return f(7);
+}
+
+double AnalysisResult::beam_shear_z(
+    const Beam3D& beam
+) const
+{
+    const auto f =
+        beam_local_end_forces(beam);
+
+    return f(8);
+}
+
+double AnalysisResult::beam_moment_y(
+    const Beam3D& beam
+) const
+{
+    const auto f =
+        beam_local_end_forces(beam);
+
+    return f(10);
+}
+
+double AnalysisResult::beam_moment_z(
+    const Beam3D& beam
+) const
+{
+    const auto f =
+        beam_local_end_forces(beam);
+
+    return f(11);
+}
+
+
 
 } // namespace carambola
