@@ -151,6 +151,26 @@ PYBIND11_MODULE(_carambola, m)
         .def(
             "stiffness_matrix",
             &carambola::Truss3D::stiffness_matrix
+        )
+        .def(
+          "axial_deformation",
+          &carambola::Truss3D::axial_deformation,
+          py::arg("displacements")
+        )
+        .def(
+            "axial_strain",
+            &carambola::Truss3D::axial_strain,
+            py::arg("displacements")
+        )
+        .def(
+            "axial_stress",
+            &carambola::Truss3D::axial_stress,
+            py::arg("displacements")
+        )
+        .def(
+            "axial_force",
+            &carambola::Truss3D::axial_force,
+            py::arg("displacements")
         );
 
     py::class_<carambola::Support>(m, "Support")
@@ -235,6 +255,11 @@ PYBIND11_MODULE(_carambola, m)
         .def_property_readonly(
             "point_load_count",
             &carambola::Model::point_load_count
+        )
+        .def_property_readonly(
+            "trusses",
+            &carambola::Model::trusses,
+            py::return_value_policy::reference_internal
         );
 
     py::class_<carambola::Assembler>(m, "Assembler")

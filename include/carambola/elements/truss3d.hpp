@@ -29,6 +29,22 @@ public:
 
     Eigen::Matrix<double, 6, 6> stiffness_matrix() const;
 
+    double axial_deformation(
+        const Eigen::VectorXd& displacements
+    ) const;
+
+    double axial_strain(
+        const Eigen::VectorXd& displacements
+    ) const;
+
+    double axial_stress(
+        const Eigen::VectorXd& displacements
+    ) const;
+
+    double axial_force(
+        const Eigen::VectorXd& displacements
+    ) const;
+
 private:
     const Node* node_start_;
     const Node* node_end_;
@@ -36,4 +52,4 @@ private:
     const Section* section_;
 };
 
-}
+} // namespace carambola

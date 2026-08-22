@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <carambola/dof.hpp>
+
 
 namespace carambola {
 
@@ -93,5 +95,79 @@ Eigen::Matrix<double, 6, 6> Truss3D::stiffness_matrix() const
 
     return k * K;
 }
+
+double Truss3D::axial_deformation(
+    const Eigen::VectorXd& displacements
+) const
+{
+    const std::size_t i = node_start_->id();
+    const std::size_t j = node_end_->id();
+
+    const Eigen::Vector3d u_start(
+        displacements(
+            static_cast<Eigen::Index>(
+                translational_dof(i, 0)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                translational_dof(i, 1)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                translational_dof(i, 2)
+            )
+        )
+    );
+
+    const Eigen::Vector3d u_end(
+        displacements(
+            static_cast<Eigen::Index>(
+                translational_dof(j, 0)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                translational_dof(j, 1)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                translational_dof(j, 2)
+            )
+        )
+    );
+
+    return (u_end - u_start).dot(
+        direction()
+    );
+}
+
+double Truss3D::axial_strain(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return axial_deformation(displacements)
+        / length();
+}
+
+double Truss3D::axial_stress(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return material_->youngs_modulus()
+        * axial_strain(displacements);
+}
+
+double Truss3D::axial_force(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return section_->area()
+        * axial_stress(displacements);
+}
+
+
 
 }
