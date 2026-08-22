@@ -20,7 +20,7 @@ find_package(pybind11 CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 
 add_library(
-    carambola_core
+   carambola_core
     STATIC
     src/version.cpp
     src/node.cpp
@@ -29,10 +29,11 @@ add_library(
     src/model.cpp
     src/support.cpp
     src/load.cpp
+    src/beam_load.cpp
     src/assembler.cpp
     src/solver.cpp
-    src/elements/truss3d.cpp    
-    src/elements/beam3d.cpp
+    src/elements/truss3d.cpp
+    src/elements/beam3d.cpp 
 )
 
 target_include_directories(

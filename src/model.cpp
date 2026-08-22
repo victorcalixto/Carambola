@@ -94,6 +94,35 @@ Beam3D& Model::add_beam(
     return beams_.back();
 }
 
+UniformBeamLoad& Model::add_uniform_beam_load(
+    const Beam3D& beam,
+    double qx,
+    double qy,
+    double qz
+)
+{
+    uniform_beam_loads_.emplace_back(
+        beam,
+        qx,
+        qy,
+        qz
+    );
+
+    return uniform_beam_loads_.back();
+}
+
+std::size_t
+Model::uniform_beam_load_count() const
+{
+    return uniform_beam_loads_.size();
+}
+
+const std::deque<UniformBeamLoad>&
+Model::uniform_beam_loads() const
+{
+    return uniform_beam_loads_;
+}
+
 
 
 std::size_t Model::node_count() const

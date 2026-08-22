@@ -8,7 +8,7 @@
 #include <carambola/node.hpp>
 #include <carambola/support.hpp>
 #include <carambola/elements/beam3d.hpp>
-
+#include <carambola/beam_load.hpp>
 
 namespace carambola {
 
@@ -56,6 +56,14 @@ public:
 
     );
 
+    UniformBeamLoad& add_uniform_beam_load(
+    const Beam3D& beam,
+    double qx,
+    double qy,
+    double qz
+    
+    );
+
 
     // Counts
     std::size_t node_count() const;
@@ -63,6 +71,7 @@ public:
     std::size_t support_count() const;
     std::size_t point_load_count() const;
     std::size_t beam_count() const;
+    std::size_t uniform_beam_load_count() const;
 
     // Access
     const std::deque<Node>& nodes() const;
@@ -70,6 +79,8 @@ public:
     const std::deque<Support>& supports() const;
     const std::deque<PointLoad>& point_loads() const;
     const std::deque<Beam3D>& beams() const;
+    const std::deque<UniformBeamLoad>&
+    uniform_beam_loads() const;
     
    
 private:
@@ -78,6 +89,8 @@ private:
     std::deque<Support> supports_;
     std::deque<PointLoad> point_loads_;
     std::deque<Beam3D> beams_;
+    std::deque<UniformBeamLoad>
+    uniform_beam_loads_;
 };
 
 }

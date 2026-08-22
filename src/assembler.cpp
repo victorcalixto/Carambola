@@ -5,6 +5,9 @@
 #include <array>
 #include <vector>
 
+
+
+
 namespace carambola {
 
 Assembler::Assembler(const Model& model)
@@ -186,6 +189,52 @@ Eigen::VectorXd Assembler::force_vector() const
             )
         ) += load.mz();
     }
+
+   for (
+    const auto& load :
+    model_->uniform_beam_loads()
+) {
+    const Beam3D& beam =
+        load.beam();
+
+    const auto f =
+        load.global_equivalent_nodal_load();
+
+    const std::size_t i =
+        beam.node_start().id();
+
+    const std::size_t j =
+        beam.node_end().id();
+
+    const std::array<std::size_t, 12> dofs = {
+        dof_index(i, Dof::UX),
+        dof_index(i, Dof::UY),
+        dof_index(i, Dof::UZ),
+        dof_index(i, Dof::RX),
+        dof_index(i, Dof::RY),
+        dof_index(i, Dof::RZ),
+
+        dof_index(j, Dof::UX),
+        dof_index(j, Dof::UY),
+        dof_index(j, Dof::UZ),
+        dof_index(j, Dof::RX),
+        dof_index(j, Dof::RY),
+        dof_index(j, Dof::RZ),
+    };
+
+    for (std::size_t k = 0;
+         k < 12;
+         ++k) {
+
+        F(
+            static_cast<Eigen::Index>(
+                dofs[k]
+            )
+        ) += f(
+            static_cast<Eigen::Index>(k)
+        );
+    }
+}
 
     return F;
 }

@@ -12,6 +12,7 @@ namespace carambola {
 class AnalysisResult {
 public:
     AnalysisResult(
+        const Model& model,
         Eigen::VectorXd displacements,
         Eigen::VectorXd reactions
     );
@@ -82,6 +83,7 @@ public:
 
 
 private:
+    const Model* model_;
     Eigen::VectorXd displacements_;
     Eigen::VectorXd reactions_;
 };

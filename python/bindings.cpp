@@ -13,6 +13,8 @@
 #include <carambola/version.hpp>
 #include <carambola/solver.hpp>
 #include <carambola/elements/beam3d.hpp>
+#include <carambola/beam_load.hpp>
+
 
 namespace py = pybind11;
 
@@ -319,7 +321,26 @@ PYBIND11_MODULE(_carambola, m)
           py::return_value_policy::reference_internal
       )
 
-      ;
+      .def(
+        "add_uniform_beam_load",
+        &carambola::Model::add_uniform_beam_load,
+        py::arg("beam"),
+        py::arg("qx") = 0.0,
+        py::arg("qy") = 0.0,
+        py::arg("qz") = 0.0,
+        py::return_value_policy::reference_internal
+    ) 
+      .def_property_readonly(
+          "uniform_beam_load_count",
+          &carambola::Model::
+              uniform_beam_load_count
+      )
+      .def_property_readonly(
+          "uniform_beam_loads",
+          &carambola::Model::
+              uniform_beam_loads,
+          py::return_value_policy::reference_internal
+      );
 
     py::class_<carambola::Assembler>(m, "Assembler")
         .def(
@@ -516,5 +537,32 @@ PYBIND11_MODULE(_carambola, m)
         "local_end_forces",
         &carambola::Beam3D::local_end_forces,
         py::arg("displacements")
+    );
+
+  py::class_<carambola::UniformBeamLoad>(
+    m,
+    "UniformBeamLoad"
+)
+    .def_property_readonly(
+        "qx",
+        &carambola::UniformBeamLoad::qx
+    )
+    .def_property_readonly(
+        "qy",
+        &carambola::UniformBeamLoad::qy
+    )
+    .def_property_readonly(
+        "qz",
+        &carambola::UniformBeamLoad::qz
+    )
+    .def(
+        "local_equivalent_nodal_load",
+        &carambola::UniformBeamLoad::
+            local_equivalent_nodal_load
+    )
+    .def(
+        "global_equivalent_nodal_load",
+        &carambola::UniformBeamLoad::
+            global_equivalent_nodal_load
     );
 }

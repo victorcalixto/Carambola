@@ -4,6 +4,87 @@ import pytest
 import carambola as cb
 
 
+def test_udl_beam_end_forces():
+    model = cb.Model()
+
+    L = 2.0
+    q = 1000.0
+
+    n0 = model.add_node(
+        0.0, 0.0, 0.0
+    )
+
+    n1 = model.add_node(
+        L, 0.0, 0.0
+    )
+
+    steel = cb.Material(
+        "Steel",
+        200e9,
+        0.3,
+        7850.0,
+    )
+
+    section = cb.RectangularSection(
+        0.2,
+        0.3,
+    )
+
+    beam = model.add_beam(
+        n0,
+        n1,
+        steel,
+        section,
+        np.array(
+            [0.0, 0.0, 1.0]
+        ),
+    )
+
+    model.add_support(
+        n0,
+        True, True, True,
+        True, True, True,
+    )
+
+    model.add_uniform_beam_load(
+        beam,
+        0.0,
+        -q,
+        0.0,
+    )
+
+    result = cb.LinearStaticSolver(
+        model
+    ).solve()
+
+    f = result.beam_local_end_forces(
+        beam
+    )
+
+    # Fixed-end shear magnitude
+    assert abs(f[1]) == pytest.approx(
+        q * L,
+        rel=1e-10,
+    )
+
+    # Fixed-end bending moment magnitude
+    assert abs(f[5]) == pytest.approx(
+        q * L**2 / 2.0,
+        rel=1e-10,
+    )
+
+    # Free-end actions should vanish.
+    assert f[7] == pytest.approx(
+        0.0,
+        abs=1e-8,
+    )
+
+    assert f[11] == pytest.approx(
+        0.0,
+        abs=1e-8,
+    )
+
+
 def make_cantilever():
     model = cb.Model()
 
