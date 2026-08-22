@@ -1,0 +1,245 @@
+#include <carambola/solver.hpp>
+
+#include <carambola/assembler.hpp>
+
+#include <Eigen/SparseCholesky>
+
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+namespace carambola {
+
+AnalysisResult::AnalysisResult(
+    Eigen::VectorXd displacements,
+    Eigen::VectorXd reactions
+)
+    : displacements_(std::move(displacements)),
+      reactions_(std::move(reactions))
+{
+}
+
+const Eigen::VectorXd& AnalysisResult::displacements() const
+{
+    return displacements_;
+}
+
+const Eigen::VectorXd& AnalysisResult::reactions() const
+{
+    return reactions_;
+}
+
+LinearStaticSolver::LinearStaticSolver(const Model& model)
+    : model_(&model)
+{
+}
+
+AnalysisResult LinearStaticSolver::solve() const
+{
+    Assembler assembler(*model_);
+
+    const Eigen::SparseMatrix<double> K =
+        assembler.stiffness_matrix();
+
+    const Eigen::VectorXd F =
+        assembler.force_vector();
+
+    const auto free_dofs =
+        assembler.free_dofs();
+
+    const std::size_t total_dofs =
+        model_->node_count() * 3;
+
+    if (free_dofs.empty()) {
+        throw std::runtime_error(
+            "No free degrees of freedom available."
+        );
+    }
+
+    const Eigen::Index n_free =
+        static_cast<Eigen::Index>(
+            free_dofs.size()
+        );
+
+    /*
+     * Map a global DOF index to its corresponding
+     * reduced-system index.
+     *
+     * -1 means the DOF is constrained.
+     */
+    std::vector<Eigen::Index> global_to_free(
+        total_dofs,
+        -1
+    );
+
+    for (Eigen::Index i = 0; i < n_free; ++i) {
+        const std::size_t global_dof =
+            free_dofs[
+                static_cast<std::size_t>(i)
+            ];
+
+        global_to_free[global_dof] = i;
+    }
+
+    /*
+     * Construct reduced stiffness matrix Kff.
+     */
+    Eigen::SparseMatrix<double> Kff(
+        n_free,
+        n_free
+    );
+
+    std::vector<Eigen::Triplet<double>> triplets;
+
+    triplets.reserve(
+        static_cast<std::size_t>(
+            K.nonZeros()
+        )
+    );
+
+    for (Eigen::Index outer = 0;
+         outer < K.outerSize();
+         ++outer) {
+
+        for (
+            Eigen::SparseMatrix<double>::InnerIterator
+                it(K, outer);
+            it;
+            ++it
+        ) {
+            const Eigen::Index global_row =
+                it.row();
+
+            const Eigen::Index global_col =
+                it.col();
+
+            const Eigen::Index local_row =
+                global_to_free[
+                    static_cast<std::size_t>(
+                        global_row
+                    )
+                ];
+
+            const Eigen::Index local_col =
+                global_to_free[
+                    static_cast<std::size_t>(
+                        global_col
+                    )
+                ];
+
+            /*
+             * Only include entries where both
+             * DOFs are free.
+             */
+            if (
+                local_row >= 0 &&
+                local_col >= 0
+            ) {
+                triplets.emplace_back(
+                    local_row,
+                    local_col,
+                    it.value()
+                );
+            }
+        }
+    }
+
+    Kff.setFromTriplets(
+        triplets.begin(),
+        triplets.end()
+    );
+
+    Kff.makeCompressed();
+
+    /*
+     * Construct reduced force vector Ff.
+     */
+    Eigen::VectorXd Ff(n_free);
+
+    for (Eigen::Index i = 0;
+         i < n_free;
+         ++i) {
+
+        const std::size_t global_dof =
+            free_dofs[
+                static_cast<std::size_t>(i)
+            ];
+
+        Ff(i) =
+            F(
+                static_cast<Eigen::Index>(
+                    global_dof
+                )
+            );
+    }
+
+    /*
+     * Solve:
+     *
+     *     Kff * uf = Ff
+     */
+    Eigen::SimplicialLDLT<
+        Eigen::SparseMatrix<double>
+    > solver;
+
+    solver.compute(Kff);
+
+    if (solver.info() != Eigen::Success) {
+        throw std::runtime_error(
+            "Failed to factorize stiffness matrix. "
+            "The structure may be unstable or singular."
+        );
+    }
+
+    const Eigen::VectorXd uf =
+        solver.solve(Ff);
+
+    if (solver.info() != Eigen::Success) {
+        throw std::runtime_error(
+            "Failed to solve structural system."
+        );
+    }
+
+    /*
+     * Reconstruct complete displacement vector.
+     *
+     * Constrained DOFs remain zero.
+     */
+    Eigen::VectorXd u =
+        Eigen::VectorXd::Zero(
+            static_cast<Eigen::Index>(
+                total_dofs
+            )
+        );
+
+    for (Eigen::Index i = 0;
+         i < n_free;
+         ++i) {
+
+        const std::size_t global_dof =
+            free_dofs[
+                static_cast<std::size_t>(i)
+            ];
+
+        u(
+            static_cast<Eigen::Index>(
+                global_dof
+            )
+        ) = uf(i);
+    }
+
+    /*
+     * Recover support reactions:
+     *
+     *     R = K*u - F
+     */
+    const Eigen::VectorXd reactions =
+        K * u - F;
+
+    return AnalysisResult(
+        std::move(u),
+        std::move(reactions)
+    );
+}
+
+} // namespace carambola

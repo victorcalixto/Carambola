@@ -1,6 +1,8 @@
 from ._carambola import (
+    AnalysisResult,
     Assembler,
     CircularSection,
+    LinearStaticSolver,
     Material,
     Model,
     Node,
@@ -13,8 +15,10 @@ from ._carambola import (
 )
 
 __all__ = [
+    "AnalysisResult",
     "Assembler",
     "CircularSection",
+    "LinearStaticSolver",
     "Material",
     "Model",
     "Node",

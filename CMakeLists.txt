@@ -30,7 +30,8 @@ add_library(
     src/support.cpp
     src/load.cpp
     src/assembler.cpp
-    src/elements/truss3d.cpp
+    src/solver.cpp
+    src/elements/truss3d.cpp    
 )
 
 target_include_directories(

@@ -11,6 +11,9 @@
 #include <carambola/section.hpp>
 #include <carambola/support.hpp>
 #include <carambola/version.hpp>
+#include <carambola/solver.hpp>
+
+
 
 namespace py = pybind11;
 
@@ -256,4 +259,31 @@ PYBIND11_MODULE(_carambola, m)
             "free_dofs",
             &carambola::Assembler::free_dofs
         );
+
+    py::class_<carambola::AnalysisResult>(
+      m,
+      "AnalysisResult"
+  )
+      .def_property_readonly(
+          "displacements",
+          &carambola::AnalysisResult::displacements
+      )
+      .def_property_readonly(
+          "reactions",
+          &carambola::AnalysisResult::reactions
+      );
+
+  py::class_<carambola::LinearStaticSolver>(
+      m,
+      "LinearStaticSolver"
+  )
+      .def(
+          py::init<const carambola::Model&>(),
+          py::arg("model"),
+          py::keep_alive<1, 2>()
+      )
+      .def(
+          "solve",
+          &carambola::LinearStaticSolver::solve
+      );
 }
