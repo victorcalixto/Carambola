@@ -42,11 +42,17 @@ def make_axial_bar(load=1000.0):
         True,
         True,
         True,
+        True,
+        True,
+        True,
     )
 
     model.add_support(
         n1,
         False,
+        True,
+        True,
+        True,
         True,
         True,
     )
@@ -93,8 +99,6 @@ def test_axial_strain():
         result.displacements
     )
 
-    # delta L / L
-    # 1e-6 / 2
     assert strain == pytest.approx(
         5.0e-7,
         rel=1e-12,
@@ -113,11 +117,6 @@ def test_axial_stress():
     stress = truss.axial_stress(
         result.displacements
     )
-
-    # sigma = E * epsilon
-    #
-    # 200e9 * 5e-7
-    # = 100000 Pa
 
     assert stress == pytest.approx(
         100000.0,

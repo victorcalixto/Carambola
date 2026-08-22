@@ -6,12 +6,18 @@ Support::Support(
     const Node& node,
     bool ux,
     bool uy,
-    bool uz
+    bool uz,
+    bool rx,
+    bool ry,
+    bool rz
 )
     : node_(&node),
       ux_(ux),
       uy_(uy),
-      uz_(uz)
+      uz_(uz),
+      rx_(rx),
+      ry_(ry),
+      rz_(rz)
 {
 }
 
@@ -35,4 +41,19 @@ bool Support::uz() const
     return uz_;
 }
 
+bool Support::rx() const
+{
+    return rx_;
 }
+
+bool Support::ry() const
+{
+    return ry_;
+}
+
+bool Support::rz() const
+{
+    return rz_;
+}
+
+} // namespace carambola

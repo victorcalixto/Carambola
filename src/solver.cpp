@@ -136,7 +136,7 @@ AnalysisResult LinearStaticSolver::solve() const
         assembler.free_dofs();
 
     const std::size_t total_dofs =
-        model_->node_count() * 3;
+    model_->node_count() * DOFS_PER_NODE;
 
     if (free_dofs.empty()) {
         throw std::runtime_error(

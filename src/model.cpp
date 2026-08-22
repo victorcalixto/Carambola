@@ -32,14 +32,20 @@ Support& Model::add_support(
     const Node& node,
     bool ux,
     bool uy,
-    bool uz
+    bool uz,
+    bool rx,
+    bool ry,
+    bool rz
 )
 {
     supports_.emplace_back(
         node,
         ux,
         uy,
-        uz
+        uz,
+        rx,
+        ry,
+        rz
     );
 
     return supports_.back();
@@ -49,18 +55,28 @@ PointLoad& Model::add_point_load(
     const Node& node,
     double fx,
     double fy,
-    double fz
+    double fz,
+    double mx,
+    double my,
+    double mz
 )
 {
     point_loads_.emplace_back(
         node,
         fx,
         fy,
-        fz
+        fz,
+        mx,
+        my,
+        mz
     );
 
     return point_loads_.back();
 }
+
+
+
+
 
 std::size_t Model::node_count() const
 {

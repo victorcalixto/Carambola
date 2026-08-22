@@ -44,12 +44,18 @@ def make_axial_bar():
         True,
         True,
         True,
+        True,
+        True,
+        True,
     )
 
     # Node 1 can move only in X.
     model.add_support(
         n1,
         False,
+        True,
+        True,
+        True,
         True,
         True,
     )
@@ -80,7 +86,8 @@ def test_axial_bar_displacement():
         P * L / (A * E)
     )
 
-    assert result.displacements[3] == pytest.approx(
+    # Node 1 UX is global DOF 6.
+    assert result.displacements[6] == pytest.approx(
         expected_displacement,
         rel=1e-12,
     )
@@ -93,9 +100,10 @@ def test_axial_bar_fixed_node_displacement():
         model
     ).solve()
 
+    # All six DOFs at node 0 are fixed.
     assert np.allclose(
-        result.displacements[0:3],
-        [0.0, 0.0, 0.0],
+        result.displacements[0:6],
+        np.zeros(6),
     )
 
 

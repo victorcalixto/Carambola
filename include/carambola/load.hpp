@@ -10,7 +10,10 @@ public:
         const Node& node,
         double fx,
         double fy,
-        double fz
+        double fz,
+        double mx = 0.0,
+        double my = 0.0,
+        double mz = 0.0
     );
 
     const Node& node() const;
@@ -19,11 +22,20 @@ public:
     double fy() const;
     double fz() const;
 
+    double mx() const;
+    double my() const;
+    double mz() const;
+
 private:
     const Node* node_;
+
     double fx_;
     double fy_;
     double fz_;
+
+    double mx_;
+    double my_;
+    double mz_;
 };
 
-}
+} // namespace carambola

@@ -173,7 +173,7 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("displacements")
         );
 
-    py::class_<carambola::Support>(m, "Support")
+      py::class_<carambola::Support>(m, "Support")
         .def_property_readonly(
             "ux",
             &carambola::Support::ux
@@ -185,22 +185,45 @@ PYBIND11_MODULE(_carambola, m)
         .def_property_readonly(
             "uz",
             &carambola::Support::uz
-        );
-
-    py::class_<carambola::PointLoad>(m, "PointLoad")
-        .def_property_readonly(
-            "fx",
-            &carambola::PointLoad::fx
         )
         .def_property_readonly(
-            "fy",
-            &carambola::PointLoad::fy
+            "rx",
+            &carambola::Support::rx
         )
         .def_property_readonly(
-            "fz",
-            &carambola::PointLoad::fz
+            "ry",
+            &carambola::Support::ry
+        )
+        .def_property_readonly(
+            "rz",
+            &carambola::Support::rz
         );
-
+      py::class_<carambola::PointLoad>(m, "PointLoad")
+          .def_property_readonly(
+              "fx",
+              &carambola::PointLoad::fx
+          )
+          .def_property_readonly(
+              "fy",
+              &carambola::PointLoad::fy
+          )
+          .def_property_readonly(
+              "fz",
+              &carambola::PointLoad::fz
+          )
+          .def_property_readonly(
+              "mx",
+              &carambola::PointLoad::mx
+          )
+          .def_property_readonly(
+              "my",
+              &carambola::PointLoad::my
+          )
+          .def_property_readonly(
+              "mz",
+              &carambola::PointLoad::mz
+          );
+              
     py::class_<carambola::Model>(m, "Model")
         .def(py::init<>())
         .def(
@@ -222,25 +245,33 @@ PYBIND11_MODULE(_carambola, m)
             py::keep_alive<1, 4>(),
             py::keep_alive<1, 5>()
         )
-        .def(
-            "add_support",
-            &carambola::Model::add_support,
-            py::arg("node"),
-            py::arg("ux"),
-            py::arg("uy"),
-            py::arg("uz"),
-            py::return_value_policy::reference_internal
-        )
-        .def(
-            "add_point_load",
-            &carambola::Model::add_point_load,
-            py::arg("node"),
-            py::arg("fx"),
-            py::arg("fy"),
-            py::arg("fz"),
-            py::return_value_policy::reference_internal
-        )
-        .def_property_readonly(
+      .def(
+          "add_support",
+          &carambola::Model::add_support,
+          py::arg("node"),
+          py::arg("ux"),
+          py::arg("uy"),
+          py::arg("uz"),
+          py::arg("rx") = false,
+          py::arg("ry") = false,
+          py::arg("rz") = false,
+          py::return_value_policy::reference_internal
+      )
+    .def(
+          "add_point_load",
+          &carambola::Model::add_point_load,
+          py::arg("node"),
+          py::arg("fx"),
+          py::arg("fy"),
+          py::arg("fz"),
+          py::arg("mx") = 0.0,
+          py::arg("my") = 0.0,
+          py::arg("mz") = 0.0,
+          py::return_value_policy::reference_internal
+      )
+
+
+      .def_property_readonly(
             "node_count",
             &carambola::Model::node_count
         )

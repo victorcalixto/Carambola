@@ -28,8 +28,23 @@ def make_model():
         section,
     )
 
+    # Fully fixed node.
     model.add_support(
         n0,
+        True,
+        True,
+        True,
+        True,
+        True,
+        True,
+    )
+
+    # Node 1 is free only in UX.
+    model.add_support(
+        n1,
+        False,
+        True,
+        True,
         True,
         True,
         True,
@@ -48,7 +63,7 @@ def make_model():
 def test_supports_and_loads_are_stored():
     model = make_model()
 
-    assert model.support_count == 1
+    assert model.support_count == 2
     assert model.point_load_count == 1
 
 
@@ -60,15 +75,27 @@ def test_force_vector():
     F = assembler.force_vector()
 
     expected = np.array([
+        # Node 0
         0.0,
         0.0,
         0.0,
+        0.0,
+        0.0,
+        0.0,
+
+        # Node 1
         1000.0,
+        0.0,
+        0.0,
+        0.0,
         0.0,
         0.0,
     ])
 
-    assert np.allclose(F, expected)
+    assert np.allclose(
+        F,
+        expected,
+    )
 
 
 def test_constrained_dofs():
@@ -80,6 +107,14 @@ def test_constrained_dofs():
         0,
         1,
         2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
     ]
 
 
@@ -89,7 +124,5 @@ def test_free_dofs():
     assembler = cb.Assembler(model)
 
     assert assembler.free_dofs() == [
-        3,
-        4,
-        5,
+        6,
     ]

@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 import carambola as cb
 
@@ -54,7 +53,8 @@ def test_global_stiffness_shape():
 
     K = assembler.stiffness_matrix()
 
-    assert K.shape == (9, 9)
+    # 3 nodes × 6 DOFs
+    assert K.shape == (18, 18)
 
 
 def test_two_element_bar_global_stiffness():
@@ -73,15 +73,20 @@ def test_two_element_bar_global_stiffness():
     dense = np.asarray(K.todense())
 
     expected_x = np.array([
-        [ k, -k,  0],
-        [-k, 2*k, -k],
-        [ 0, -k,  k],
+        [k, -k, 0],
+        [-k, 2 * k, -k],
+        [0, -k, k],
     ])
 
+    # UX DOFs:
+    #
+    # node 0 -> 0
+    # node 1 -> 6
+    # node 2 -> 12
     actual_x = dense[
         np.ix_(
-            [0, 3, 6],
-            [0, 3, 6],
+            [0, 6, 12],
+            [0, 6, 12],
         )
     ]
 

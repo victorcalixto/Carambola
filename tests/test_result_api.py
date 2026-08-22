@@ -43,11 +43,17 @@ def make_axial_bar():
         True,
         True,
         True,
+        True,
+        True,
+        True,
     )
 
     model.add_support(
         n1,
         False,
+        True,
+        True,
+        True,
         True,
         True,
     )
@@ -69,11 +75,17 @@ def test_node_displacement_api():
         model
     ).solve()
 
-    displacement = result.node_displacement(n1)
+    displacement = result.node_displacement(
+        n1
+    )
 
     assert np.allclose(
         displacement,
-        [1.0e-6, 0.0, 0.0],
+        [
+            1.0e-6,
+            0.0,
+            0.0,
+        ],
     )
 
 
@@ -84,11 +96,17 @@ def test_node_reaction_api():
         model
     ).solve()
 
-    reaction = result.node_reaction(n0)
+    reaction = result.node_reaction(
+        n0
+    )
 
     assert np.allclose(
         reaction,
-        [-1000.0, 0.0, 0.0],
+        [
+            -1000.0,
+            0.0,
+            0.0,
+        ],
     )
 
 

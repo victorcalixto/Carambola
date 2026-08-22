@@ -15,7 +15,7 @@ Assembler::Assembler(const Model& model)
 Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
 {
     const std::size_t dof_count =
-        model_->node_count() * 3;
+        model_->node_count() * DOFS_PER_NODE;
 
     Eigen::SparseMatrix<double> K(
         static_cast<Eigen::Index>(dof_count),
@@ -37,13 +37,15 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
         const std::size_t j =
             truss.node_end().id();
 
+        // Truss3D uses only translational DOFs.
         const std::array<std::size_t, 6> dofs = {
-            translational_dof(i, 0),
-            translational_dof(i, 1),
-            translational_dof(i, 2),
-            translational_dof(j, 0),
-            translational_dof(j, 1),
-            translational_dof(j, 2),
+            dof_index(i, Dof::UX),
+            dof_index(i, Dof::UY),
+            dof_index(i, Dof::UZ),
+
+            dof_index(j, Dof::UX),
+            dof_index(j, Dof::UY),
+            dof_index(j, Dof::UZ),
         };
 
         for (std::size_t row = 0; row < 6; ++row) {
@@ -55,8 +57,12 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
 
                 if (value != 0.0) {
                     triplets.emplace_back(
-                        static_cast<Eigen::Index>(dofs[row]),
-                        static_cast<Eigen::Index>(dofs[col]),
+                        static_cast<Eigen::Index>(
+                            dofs[row]
+                        ),
+                        static_cast<Eigen::Index>(
+                            dofs[col]
+                        ),
                         value
                     );
                 }
@@ -77,11 +83,13 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
 Eigen::VectorXd Assembler::force_vector() const
 {
     const std::size_t dof_count =
-        model_->node_count() * 3;
+        model_->node_count() * DOFS_PER_NODE;
 
     Eigen::VectorXd F =
         Eigen::VectorXd::Zero(
-            static_cast<Eigen::Index>(dof_count)
+            static_cast<Eigen::Index>(
+                dof_count
+            )
         );
 
     for (const auto& load : model_->point_loads()) {
@@ -90,27 +98,46 @@ Eigen::VectorXd Assembler::force_vector() const
 
         F(
             static_cast<Eigen::Index>(
-                translational_dof(node_id, 0)
+                dof_index(node_id, Dof::UX)
             )
         ) += load.fx();
 
         F(
             static_cast<Eigen::Index>(
-                translational_dof(node_id, 1)
+                dof_index(node_id, Dof::UY)
             )
         ) += load.fy();
 
         F(
             static_cast<Eigen::Index>(
-                translational_dof(node_id, 2)
+                dof_index(node_id, Dof::UZ)
             )
         ) += load.fz();
+
+        F(
+            static_cast<Eigen::Index>(
+                dof_index(node_id, Dof::RX)
+            )
+        ) += load.mx();
+
+        F(
+            static_cast<Eigen::Index>(
+                dof_index(node_id, Dof::RY)
+            )
+        ) += load.my();
+
+        F(
+            static_cast<Eigen::Index>(
+                dof_index(node_id, Dof::RZ)
+            )
+        ) += load.mz();
     }
 
     return F;
 }
 
-std::vector<std::size_t> Assembler::constrained_dofs() const
+std::vector<std::size_t>
+Assembler::constrained_dofs() const
 {
     std::vector<std::size_t> dofs;
 
@@ -120,19 +147,37 @@ std::vector<std::size_t> Assembler::constrained_dofs() const
 
         if (support.ux()) {
             dofs.push_back(
-                translational_dof(node_id, 0)
+                dof_index(node_id, Dof::UX)
             );
         }
 
         if (support.uy()) {
             dofs.push_back(
-                translational_dof(node_id, 1)
+                dof_index(node_id, Dof::UY)
             );
         }
 
         if (support.uz()) {
             dofs.push_back(
-                translational_dof(node_id, 2)
+                dof_index(node_id, Dof::UZ)
+            );
+        }
+
+        if (support.rx()) {
+            dofs.push_back(
+                dof_index(node_id, Dof::RX)
+            );
+        }
+
+        if (support.ry()) {
+            dofs.push_back(
+                dof_index(node_id, Dof::RY)
+            );
+        }
+
+        if (support.rz()) {
+            dofs.push_back(
+                dof_index(node_id, Dof::RZ)
             );
         }
     }
@@ -153,10 +198,11 @@ std::vector<std::size_t> Assembler::constrained_dofs() const
     return dofs;
 }
 
-std::vector<std::size_t> Assembler::free_dofs() const
+std::vector<std::size_t>
+Assembler::free_dofs() const
 {
     const std::size_t dof_count =
-        model_->node_count() * 3;
+        model_->node_count() * DOFS_PER_NODE;
 
     const auto constrained =
         constrained_dofs();
@@ -167,7 +213,10 @@ std::vector<std::size_t> Assembler::free_dofs() const
         dof_count - constrained.size()
     );
 
-    for (std::size_t dof = 0; dof < dof_count; ++dof) {
+    for (std::size_t dof = 0;
+         dof < dof_count;
+         ++dof) {
+
         if (!std::binary_search(
                 constrained.begin(),
                 constrained.end(),
@@ -180,4 +229,4 @@ std::vector<std::size_t> Assembler::free_dofs() const
     return free;
 }
 
-}
+} // namespace carambola

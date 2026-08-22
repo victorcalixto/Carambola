@@ -25,20 +25,25 @@ public:
 
     // Supports
     Support& add_support(
-        const Node& node,
-        bool ux,
-        bool uy,
-        bool uz
+    const Node& node,
+    bool ux,
+    bool uy,
+    bool uz,
+    bool rx = false,
+    bool ry = false,
+    bool rz = false
     );
-
     // Loads
     PointLoad& add_point_load(
-        const Node& node,
-        double fx,
-        double fy,
-        double fz
+    const Node& node,
+    double fx,
+    double fy,
+    double fz,
+    double mx = 0.0,
+    double my = 0.0,
+    double mz = 0.0
     );
-
+      
     // Counts
     std::size_t node_count() const;
     std::size_t truss_count() const;
