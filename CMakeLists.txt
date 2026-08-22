@@ -19,6 +19,10 @@ add_library(
     carambola_core
     STATIC
     src/version.cpp
+    src/node.cpp
+    src/material.cpp
+    src/section.cpp
+    src/model.cpp
 )
 
 target_include_directories(
