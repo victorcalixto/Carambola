@@ -24,6 +24,8 @@ add_library(
     src/section.cpp
     src/model.cpp
     src/elements/truss3d.cpp
+    src/assembler.cpp    
+
 )
 
 target_include_directories(

@@ -9,6 +9,7 @@
 
 #include <pybind11/eigen.h>
 #include <carambola/elements/truss3d.hpp>
+#include <carambola/assembler.hpp>
 
 
 namespace py = pybind11;
@@ -84,25 +85,38 @@ PYBIND11_MODULE(_carambola, m)
         );
 
     py::class_<carambola::Model>(m, "Model")
-        .def(py::init<>())
-        .def(
-            "add_node",
-            &carambola::Model::add_node,
-            py::arg("x"),
-            py::arg("y"),
-            py::arg("z"),
-            py::return_value_policy::reference_internal
-        )
-        .def_property_readonly(
-            "node_count",
-            &carambola::Model::node_count
-        )
-        .def_property_readonly(
-            "nodes",
-            &carambola::Model::nodes,
-            py::return_value_policy::reference_internal
-        );
-    py::class_<carambola::Truss3D>(m, "Truss3D")
+      .def(py::init<>())
+      .def(
+          "add_node",
+          &carambola::Model::add_node,
+          py::arg("x"),
+          py::arg("y"),
+          py::arg("z"),
+          py::return_value_policy::reference_internal
+      )
+      .def(
+          "add_truss",
+          &carambola::Model::add_truss,
+          py::arg("node_start"),
+          py::arg("node_end"),
+          py::arg("material"),
+          py::arg("section"),
+          py::return_value_policy::reference_internal,
+          py::keep_alive<1, 4>(),
+          py::keep_alive<1, 5>()
+      )
+      .def_property_readonly(
+          "node_count",
+          &carambola::Model::node_count
+      )
+      .def_property_readonly(
+          "truss_count",
+          &carambola::Model::truss_count
+    );
+
+
+
+        py::class_<carambola::Truss3D>(m, "Truss3D")
     .def(
         py::init<
             const carambola::Node&,
@@ -131,4 +145,17 @@ PYBIND11_MODULE(_carambola, m)
         "stiffness_matrix",
         &carambola::Truss3D::stiffness_matrix
     );
+
+  py::class_<carambola::Assembler>(m, "Assembler")
+    .def(
+        py::init<const carambola::Model&>(),
+        py::arg("model"),
+        py::keep_alive<1, 2>()
+    )
+    .def(
+        "stiffness_matrix",
+        &carambola::Assembler::stiffness_matrix
+    );
+
+
 }
