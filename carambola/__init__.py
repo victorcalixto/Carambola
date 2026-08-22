@@ -1,3 +1,5 @@
+from ._carambola import Truss3D
+
 from ._carambola import (
     CircularSection,
     Material,
@@ -16,4 +18,5 @@ __all__ = [
     "RectangularSection",
     "Section",
     "version",
+    "Truss3D",
 ]

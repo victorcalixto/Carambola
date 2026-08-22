@@ -7,6 +7,10 @@
 #include <carambola/section.hpp>
 #include <carambola/version.hpp>
 
+#include <pybind11/eigen.h>
+#include <carambola/elements/truss3d.hpp>
+
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(_carambola, m)
@@ -98,4 +102,33 @@ PYBIND11_MODULE(_carambola, m)
             &carambola::Model::nodes,
             py::return_value_policy::reference_internal
         );
+    py::class_<carambola::Truss3D>(m, "Truss3D")
+    .def(
+        py::init<
+            const carambola::Node&,
+            const carambola::Node&,
+            const carambola::Material&,
+            const carambola::Section&
+        >(),
+        py::arg("node_start"),
+        py::arg("node_end"),
+        py::arg("material"),
+        py::arg("section"),
+        py::keep_alive<1, 2>(),
+        py::keep_alive<1, 3>(),
+        py::keep_alive<1, 4>(),
+        py::keep_alive<1, 5>()
+    )
+    .def_property_readonly(
+        "length",
+        &carambola::Truss3D::length
+    )
+    .def_property_readonly(
+        "direction",
+        &carambola::Truss3D::direction
+    )
+    .def(
+        "stiffness_matrix",
+        &carambola::Truss3D::stiffness_matrix
+    );
 }

@@ -23,6 +23,7 @@ add_library(
     src/material.cpp
     src/section.cpp
     src/model.cpp
+    src/elements/truss3d.cpp
 )
 
 target_include_directories(
