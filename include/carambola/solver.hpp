@@ -42,6 +42,14 @@ public:
         const Truss3D& truss
     ) const;
 
+    Eigen::Vector3d node_rotation(
+        const Node& node
+    ) const;
+
+    Eigen::Vector3d node_moment_reaction(
+        const Node& node
+    ) const;
+
 private:
     Eigen::VectorXd displacements_;
     Eigen::VectorXd reactions_;

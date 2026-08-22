@@ -80,6 +80,60 @@ Eigen::Vector3d AnalysisResult::node_reaction(
     );
 }
 
+Eigen::Vector3d AnalysisResult::node_rotation(
+    const Node& node
+) const
+{
+    const std::size_t id =
+        node.id();
+
+    return Eigen::Vector3d(
+        displacements_(
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RX)
+            )
+        ),
+        displacements_(
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RY)
+            )
+        ),
+        displacements_(
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RZ)
+            )
+        )
+    );
+}
+
+Eigen::Vector3d AnalysisResult::node_moment_reaction(
+    const Node& node
+) const
+{
+    const std::size_t id =
+        node.id();
+
+    return Eigen::Vector3d(
+        reactions_(
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RX)
+            )
+        ),
+        reactions_(
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RY)
+            )
+        ),
+        reactions_(
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RZ)
+            )
+        )
+    );
+}
+
+
+
 double AnalysisResult::truss_deformation(
     const Truss3D& truss
 ) const

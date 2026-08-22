@@ -23,9 +23,10 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
     );
 
     std::vector<Eigen::Triplet<double>> triplets;
-
+    
     triplets.reserve(
-        model_->truss_count() * 36
+    model_->truss_count() * 36
+    + model_->beam_count() * 144
     );
 
     for (const auto& truss : model_->trusses()) {
@@ -69,7 +70,60 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
             }
         }
     }
+    
+    for (const auto& beam : model_->beams()) {
+    const auto Ke =
+        beam.stiffness_matrix();
 
+    const std::size_t i =
+        beam.node_start().id();
+
+    const std::size_t j =
+        beam.node_end().id();
+
+    const std::array<std::size_t, 12> dofs = {
+        dof_index(i, Dof::UX),
+        dof_index(i, Dof::UY),
+        dof_index(i, Dof::UZ),
+        dof_index(i, Dof::RX),
+        dof_index(i, Dof::RY),
+        dof_index(i, Dof::RZ),
+
+        dof_index(j, Dof::UX),
+        dof_index(j, Dof::UY),
+        dof_index(j, Dof::UZ),
+        dof_index(j, Dof::RX),
+        dof_index(j, Dof::RY),
+        dof_index(j, Dof::RZ),
+    };
+
+    for (std::size_t row = 0;
+         row < 12;
+         ++row) {
+
+        for (std::size_t col = 0;
+             col < 12;
+             ++col) {
+
+            const double value = Ke(
+                static_cast<Eigen::Index>(row),
+                static_cast<Eigen::Index>(col)
+            );
+
+            if (value != 0.0) {
+                triplets.emplace_back(
+                    static_cast<Eigen::Index>(
+                        dofs[row]
+                    ),
+                    static_cast<Eigen::Index>(
+                        dofs[col]
+                    ),
+                    value
+                );
+            }
+        }
+    }
+}
     K.setFromTriplets(
         triplets.begin(),
         triplets.end()

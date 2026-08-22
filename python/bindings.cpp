@@ -290,7 +290,36 @@ PYBIND11_MODULE(_carambola, m)
             "trusses",
             &carambola::Model::trusses,
             py::return_value_policy::reference_internal
-        );
+        )
+        .def(
+          "add_beam",
+          &carambola::Model::add_beam,
+          py::arg("node_start"),
+          py::arg("node_end"),
+          py::arg("material"),
+          py::arg("section"),
+          py::arg("orientation") =
+              Eigen::Vector3d(
+                  0.0,
+                  0.0,
+                  1.0
+              ),
+          py::return_value_policy::reference_internal,
+          py::keep_alive<1, 4>(),
+          py::keep_alive<1, 5>()
+      )
+      .def_property_readonly(
+          "beam_count",
+          &carambola::Model::beam_count
+      )
+
+      .def_property_readonly(
+          "beams",
+          &carambola::Model::beams,
+          py::return_value_policy::reference_internal
+      )
+
+      ;
 
     py::class_<carambola::Assembler>(m, "Assembler")
         .def(
@@ -355,6 +384,16 @@ PYBIND11_MODULE(_carambola, m)
             "truss_force",
             &carambola::AnalysisResult::truss_force,
             py::arg("truss")
+        )
+        .def(
+          "node_rotation",
+          &carambola::AnalysisResult::node_rotation,
+          py::arg("node")
+      )
+        .def(
+            "node_moment_reaction",
+            &carambola::AnalysisResult::node_moment_reaction,
+            py::arg("node")
         );
 
     py::class_<carambola::LinearStaticSolver>(

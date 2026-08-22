@@ -1,4 +1,5 @@
 #include <carambola/model.hpp>
+#include <utility>
 
 namespace carambola {
 
@@ -74,7 +75,24 @@ PointLoad& Model::add_point_load(
     return point_loads_.back();
 }
 
+Beam3D& Model::add_beam(
+    const Node& node_start,
+    const Node& node_end,
+    const Material& material,
+    const Section& section,
+    Eigen::Vector3d orientation
+)
+{
+    beams_.emplace_back(
+        node_start,
+        node_end,
+        material,
+        section,
+        std::move(orientation)
+    );
 
+    return beams_.back();
+}
 
 
 
@@ -98,6 +116,12 @@ std::size_t Model::point_load_count() const
     return point_loads_.size();
 }
 
+std::size_t Model::beam_count() const
+{
+    return beams_.size();
+}
+
+
 const std::deque<Node>& Model::nodes() const
 {
     return nodes_;
@@ -117,5 +141,12 @@ const std::deque<PointLoad>& Model::point_loads() const
 {
     return point_loads_;
 }
+
+const std::deque<Beam3D>& Model::beams() const
+{
+    return beams_;
+}
+
+
 
 }
