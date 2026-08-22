@@ -12,6 +12,7 @@ from ._carambola import (
     Support,
     Truss3D,
     version,
+    Beam3D,
 )
 
 __all__ = [
@@ -28,4 +29,5 @@ __all__ = [
     "Support",
     "Truss3D",
     "version",
+    "Beam3D",
 ]

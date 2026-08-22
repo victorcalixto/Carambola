@@ -32,6 +32,7 @@ add_library(
     src/assembler.cpp
     src/solver.cpp
     src/elements/truss3d.cpp    
+    src/elements/beam3d.cpp
 )
 
 target_include_directories(

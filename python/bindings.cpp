@@ -12,8 +12,7 @@
 #include <carambola/support.hpp>
 #include <carambola/version.hpp>
 #include <carambola/solver.hpp>
-
-
+#include <carambola/elements/beam3d.hpp>
 
 namespace py = pybind11;
 
@@ -371,4 +370,61 @@ PYBIND11_MODULE(_carambola, m)
           "solve",
           &carambola::LinearStaticSolver::solve
       );
+
+  py::class_<carambola::Beam3D>(m, "Beam3D")
+    .def(
+        py::init<
+            const carambola::Node&,
+            const carambola::Node&,
+            const carambola::Material&,
+            const carambola::Section&,
+            Eigen::Vector3d
+        >(),
+        py::arg("node_start"),
+        py::arg("node_end"),
+        py::arg("material"),
+        py::arg("section"),
+        py::arg("orientation") =
+            Eigen::Vector3d(
+                0.0,
+                0.0,
+                1.0
+            ),
+        py::keep_alive<1, 2>(),
+        py::keep_alive<1, 3>(),
+        py::keep_alive<1, 4>(),
+        py::keep_alive<1, 5>()
+    )
+    .def_property_readonly(
+        "length",
+        &carambola::Beam3D::length
+    )
+    .def_property_readonly(
+        "local_x",
+        &carambola::Beam3D::local_x
+    )
+    .def_property_readonly(
+        "local_y",
+        &carambola::Beam3D::local_y
+    )
+    .def_property_readonly(
+        "local_z",
+        &carambola::Beam3D::local_z
+    )
+    .def(
+        "rotation_matrix",
+        &carambola::Beam3D::rotation_matrix
+    )
+    .def(
+        "local_stiffness_matrix",
+        &carambola::Beam3D::local_stiffness_matrix
+    )
+    .def(
+        "transformation_matrix",
+        &carambola::Beam3D::transformation_matrix
+    )
+    .def(
+        "stiffness_matrix",
+        &carambola::Beam3D::stiffness_matrix
+    );
 }
