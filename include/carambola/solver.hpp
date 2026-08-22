@@ -2,7 +2,9 @@
 
 #include <Eigen/Dense>
 
+#include <carambola/elements/truss3d.hpp>
 #include <carambola/model.hpp>
+#include <carambola/node.hpp>
 
 namespace carambola {
 
@@ -15,6 +17,30 @@ public:
 
     const Eigen::VectorXd& displacements() const;
     const Eigen::VectorXd& reactions() const;
+
+    Eigen::Vector3d node_displacement(
+        const Node& node
+    ) const;
+
+    Eigen::Vector3d node_reaction(
+        const Node& node
+    ) const;
+
+    double truss_deformation(
+        const Truss3D& truss
+    ) const;
+
+    double truss_strain(
+        const Truss3D& truss
+    ) const;
+
+    double truss_stress(
+        const Truss3D& truss
+    ) const;
+
+    double truss_force(
+        const Truss3D& truss
+    ) const;
 
 private:
     Eigen::VectorXd displacements_;

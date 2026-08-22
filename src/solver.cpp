@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <carambola/dof.hpp>
 
 namespace carambola {
 
@@ -28,6 +29,93 @@ const Eigen::VectorXd& AnalysisResult::reactions() const
 {
     return reactions_;
 }
+
+Eigen::Vector3d AnalysisResult::node_displacement(
+    const Node& node
+) const
+{
+    const std::size_t id = node.id();
+
+    return Eigen::Vector3d(
+        displacements_(
+            static_cast<Eigen::Index>(
+                translational_dof(id, 0)
+            )
+        ),
+        displacements_(
+            static_cast<Eigen::Index>(
+                translational_dof(id, 1)
+            )
+        ),
+        displacements_(
+            static_cast<Eigen::Index>(
+                translational_dof(id, 2)
+            )
+        )
+    );
+}
+
+Eigen::Vector3d AnalysisResult::node_reaction(
+    const Node& node
+) const
+{
+    const std::size_t id = node.id();
+
+    return Eigen::Vector3d(
+        reactions_(
+            static_cast<Eigen::Index>(
+                translational_dof(id, 0)
+            )
+        ),
+        reactions_(
+            static_cast<Eigen::Index>(
+                translational_dof(id, 1)
+            )
+        ),
+        reactions_(
+            static_cast<Eigen::Index>(
+                translational_dof(id, 2)
+            )
+        )
+    );
+}
+
+double AnalysisResult::truss_deformation(
+    const Truss3D& truss
+) const
+{
+    return truss.axial_deformation(
+        displacements_
+    );
+}
+
+double AnalysisResult::truss_strain(
+    const Truss3D& truss
+) const
+{
+    return truss.axial_strain(
+        displacements_
+    );
+}
+
+double AnalysisResult::truss_stress(
+    const Truss3D& truss
+) const
+{
+    return truss.axial_stress(
+        displacements_
+    );
+}
+
+double AnalysisResult::truss_force(
+    const Truss3D& truss
+) const
+{
+    return truss.axial_force(
+        displacements_
+    );
+}
+
 
 LinearStaticSolver::LinearStaticSolver(const Model& model)
     : model_(&model)

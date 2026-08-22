@@ -284,21 +284,50 @@ PYBIND11_MODULE(_carambola, m)
             "free_dofs",
             &carambola::Assembler::free_dofs
         );
-
     py::class_<carambola::AnalysisResult>(
-      m,
-      "AnalysisResult"
-  )
-      .def_property_readonly(
-          "displacements",
-          &carambola::AnalysisResult::displacements
-      )
-      .def_property_readonly(
-          "reactions",
-          &carambola::AnalysisResult::reactions
-      );
+        m,
+        "AnalysisResult"
+    )
+        .def_property_readonly(
+            "displacements",
+            &carambola::AnalysisResult::displacements
+        )
+        .def_property_readonly(
+            "reactions",
+            &carambola::AnalysisResult::reactions
+        )
+        .def(
+            "node_displacement",
+            &carambola::AnalysisResult::node_displacement,
+            py::arg("node")
+        )
+        .def(
+            "node_reaction",
+            &carambola::AnalysisResult::node_reaction,
+            py::arg("node")
+        )
+        .def(
+            "truss_deformation",
+            &carambola::AnalysisResult::truss_deformation,
+            py::arg("truss")
+        )
+        .def(
+            "truss_strain",
+            &carambola::AnalysisResult::truss_strain,
+            py::arg("truss")
+        )
+        .def(
+            "truss_stress",
+            &carambola::AnalysisResult::truss_stress,
+            py::arg("truss")
+        )
+        .def(
+            "truss_force",
+            &carambola::AnalysisResult::truss_force,
+            py::arg("truss")
+        );
 
-  py::class_<carambola::LinearStaticSolver>(
+    py::class_<carambola::LinearStaticSolver>(
       m,
       "LinearStaticSolver"
   )
