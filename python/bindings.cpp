@@ -1,16 +1,16 @@
+#include <pybind11/eigen.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <carambola/assembler.hpp>
+#include <carambola/elements/truss3d.hpp>
+#include <carambola/load.hpp>
 #include <carambola/material.hpp>
 #include <carambola/model.hpp>
 #include <carambola/node.hpp>
 #include <carambola/section.hpp>
+#include <carambola/support.hpp>
 #include <carambola/version.hpp>
-
-#include <pybind11/eigen.h>
-#include <carambola/elements/truss3d.hpp>
-#include <carambola/assembler.hpp>
-
 
 namespace py = pybind11;
 
@@ -25,10 +25,22 @@ PYBIND11_MODULE(_carambola, m)
     );
 
     py::class_<carambola::Node>(m, "Node")
-        .def_property_readonly("id", &carambola::Node::id)
-        .def_property_readonly("x", &carambola::Node::x)
-        .def_property_readonly("y", &carambola::Node::y)
-        .def_property_readonly("z", &carambola::Node::z);
+        .def_property_readonly(
+            "id",
+            &carambola::Node::id
+        )
+        .def_property_readonly(
+            "x",
+            &carambola::Node::x
+        )
+        .def_property_readonly(
+            "y",
+            &carambola::Node::y
+        )
+        .def_property_readonly(
+            "z",
+            &carambola::Node::z
+        );
 
     py::class_<carambola::Material>(m, "Material")
         .def(
@@ -38,16 +50,40 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("nu"),
             py::arg("density")
         )
-        .def_property_readonly("name", &carambola::Material::name)
-        .def_property_readonly("E", &carambola::Material::youngs_modulus)
-        .def_property_readonly("nu", &carambola::Material::poisson_ratio)
-        .def_property_readonly("density", &carambola::Material::density)
-        .def_property_readonly("G", &carambola::Material::shear_modulus);
+        .def_property_readonly(
+            "name",
+            &carambola::Material::name
+        )
+        .def_property_readonly(
+            "E",
+            &carambola::Material::youngs_modulus
+        )
+        .def_property_readonly(
+            "nu",
+            &carambola::Material::poisson_ratio
+        )
+        .def_property_readonly(
+            "density",
+            &carambola::Material::density
+        )
+        .def_property_readonly(
+            "G",
+            &carambola::Material::shear_modulus
+        );
 
     py::class_<carambola::Section>(m, "Section")
-        .def_property_readonly("A", &carambola::Section::area)
-        .def_property_readonly("Iy", &carambola::Section::iy)
-        .def_property_readonly("Iz", &carambola::Section::iz)
+        .def_property_readonly(
+            "A",
+            &carambola::Section::area
+        )
+        .def_property_readonly(
+            "Iy",
+            &carambola::Section::iy
+        )
+        .def_property_readonly(
+            "Iz",
+            &carambola::Section::iz
+        )
         .def_property_readonly(
             "J",
             &carambola::Section::torsional_constant
@@ -84,78 +120,140 @@ PYBIND11_MODULE(_carambola, m)
             &carambola::CircularSection::radius
         );
 
+    py::class_<carambola::Truss3D>(m, "Truss3D")
+        .def(
+            py::init<
+                const carambola::Node&,
+                const carambola::Node&,
+                const carambola::Material&,
+                const carambola::Section&
+            >(),
+            py::arg("node_start"),
+            py::arg("node_end"),
+            py::arg("material"),
+            py::arg("section"),
+            py::keep_alive<1, 2>(),
+            py::keep_alive<1, 3>(),
+            py::keep_alive<1, 4>(),
+            py::keep_alive<1, 5>()
+        )
+        .def_property_readonly(
+            "length",
+            &carambola::Truss3D::length
+        )
+        .def_property_readonly(
+            "direction",
+            &carambola::Truss3D::direction
+        )
+        .def(
+            "stiffness_matrix",
+            &carambola::Truss3D::stiffness_matrix
+        );
+
+    py::class_<carambola::Support>(m, "Support")
+        .def_property_readonly(
+            "ux",
+            &carambola::Support::ux
+        )
+        .def_property_readonly(
+            "uy",
+            &carambola::Support::uy
+        )
+        .def_property_readonly(
+            "uz",
+            &carambola::Support::uz
+        );
+
+    py::class_<carambola::PointLoad>(m, "PointLoad")
+        .def_property_readonly(
+            "fx",
+            &carambola::PointLoad::fx
+        )
+        .def_property_readonly(
+            "fy",
+            &carambola::PointLoad::fy
+        )
+        .def_property_readonly(
+            "fz",
+            &carambola::PointLoad::fz
+        );
+
     py::class_<carambola::Model>(m, "Model")
-      .def(py::init<>())
-      .def(
-          "add_node",
-          &carambola::Model::add_node,
-          py::arg("x"),
-          py::arg("y"),
-          py::arg("z"),
-          py::return_value_policy::reference_internal
-      )
-      .def(
-          "add_truss",
-          &carambola::Model::add_truss,
-          py::arg("node_start"),
-          py::arg("node_end"),
-          py::arg("material"),
-          py::arg("section"),
-          py::return_value_policy::reference_internal,
-          py::keep_alive<1, 4>(),
-          py::keep_alive<1, 5>()
-      )
-      .def_property_readonly(
-          "node_count",
-          &carambola::Model::node_count
-      )
-      .def_property_readonly(
-          "truss_count",
-          &carambola::Model::truss_count
-    );
+        .def(py::init<>())
+        .def(
+            "add_node",
+            &carambola::Model::add_node,
+            py::arg("x"),
+            py::arg("y"),
+            py::arg("z"),
+            py::return_value_policy::reference_internal
+        )
+        .def(
+            "add_truss",
+            &carambola::Model::add_truss,
+            py::arg("node_start"),
+            py::arg("node_end"),
+            py::arg("material"),
+            py::arg("section"),
+            py::return_value_policy::reference_internal,
+            py::keep_alive<1, 4>(),
+            py::keep_alive<1, 5>()
+        )
+        .def(
+            "add_support",
+            &carambola::Model::add_support,
+            py::arg("node"),
+            py::arg("ux"),
+            py::arg("uy"),
+            py::arg("uz"),
+            py::return_value_policy::reference_internal
+        )
+        .def(
+            "add_point_load",
+            &carambola::Model::add_point_load,
+            py::arg("node"),
+            py::arg("fx"),
+            py::arg("fy"),
+            py::arg("fz"),
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "node_count",
+            &carambola::Model::node_count
+        )
+        .def_property_readonly(
+            "truss_count",
+            &carambola::Model::truss_count
+        )
+        .def_property_readonly(
+            "support_count",
+            &carambola::Model::support_count
+        )
+        .def_property_readonly(
+            "point_load_count",
+            &carambola::Model::point_load_count
+        );
 
-
-
-        py::class_<carambola::Truss3D>(m, "Truss3D")
-    .def(
-        py::init<
-            const carambola::Node&,
-            const carambola::Node&,
-            const carambola::Material&,
-            const carambola::Section&
-        >(),
-        py::arg("node_start"),
-        py::arg("node_end"),
-        py::arg("material"),
-        py::arg("section"),
-        py::keep_alive<1, 2>(),
-        py::keep_alive<1, 3>(),
-        py::keep_alive<1, 4>(),
-        py::keep_alive<1, 5>()
-    )
-    .def_property_readonly(
-        "length",
-        &carambola::Truss3D::length
-    )
-    .def_property_readonly(
-        "direction",
-        &carambola::Truss3D::direction
-    )
-    .def(
-        "stiffness_matrix",
-        &carambola::Truss3D::stiffness_matrix
-    );
-
-  py::class_<carambola::Assembler>(m, "Assembler")
-    .def(
-        py::init<const carambola::Model&>(),
-        py::arg("model"),
-        py::keep_alive<1, 2>()
-    )
-    .def(
-        "stiffness_matrix",
-        &carambola::Assembler::stiffness_matrix
-    );
-
-
+    py::class_<carambola::Assembler>(m, "Assembler")
+        .def(
+            py::init<const carambola::Model&>(),
+            py::arg("model"),
+            py::keep_alive<1, 2>()
+        )
+        .def(
+            "stiffness_matrix",
+            &carambola::Assembler::stiffness_matrix
+        )
+        .def(
+            "force_vector",
+            &carambola::Assembler::force_vector
+        )
+        .def(
+            "constrained_dofs",
+            &carambola::Assembler::constrained_dofs
+        )
+        .def(
+            "free_dofs",
+            &carambola::Assembler::free_dofs
+        );
 }

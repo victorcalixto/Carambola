@@ -10,7 +10,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(
+    Python
+    REQUIRED
+    COMPONENTS Interpreter Development.Module
+)
 
 find_package(pybind11 CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
@@ -23,9 +27,10 @@ add_library(
     src/material.cpp
     src/section.cpp
     src/model.cpp
+    src/support.cpp
+    src/load.cpp
+    src/assembler.cpp
     src/elements/truss3d.cpp
-    src/assembler.cpp    
-
 )
 
 target_include_directories(
@@ -59,5 +64,7 @@ target_link_libraries(
 
 install(
     TARGETS _carambola
-    DESTINATION carambola
-  )
+    LIBRARY DESTINATION carambola
+    RUNTIME DESTINATION carambola
+)
+
