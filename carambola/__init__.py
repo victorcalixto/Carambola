@@ -14,6 +14,8 @@ from ._carambola import (
     version,
     Beam3D,
     UniformBeamLoad,
+    ShellProperty,
+    Shell3D,
 )
 
 __all__ = [
@@ -32,4 +34,6 @@ __all__ = [
     "version",
     "Beam3D",
     "UniformBeamLoad",
+    "ShellProperty",
+    "Shell3D",
 ]

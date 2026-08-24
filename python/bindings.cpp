@@ -14,7 +14,8 @@
 #include <carambola/solver.hpp>
 #include <carambola/elements/beam3d.hpp>
 #include <carambola/beam_load.hpp>
-
+#include <carambola/shell_property.hpp>
+#include <carambola/elements/shell3d.hpp>
 
 namespace py = pybind11;
 
@@ -564,5 +565,26 @@ PYBIND11_MODULE(_carambola, m)
         "global_equivalent_nodal_load",
         &carambola::UniformBeamLoad::
             global_equivalent_nodal_load
+    );
+  py::class_<carambola::ShellProperty>(
+    m,
+    "ShellProperty"
+)
+    .def(
+        py::init<
+            const carambola::Material&,
+            double
+        >(),
+        py::arg("material"),
+        py::arg("thickness")
+    )
+    .def_property_readonly(
+        "material",
+        &carambola::ShellProperty::material,
+        py::return_value_policy::reference_internal
+    )
+    .def_property_readonly(
+        "thickness",
+        &carambola::ShellProperty::thickness
     );
 }
