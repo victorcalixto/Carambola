@@ -6,6 +6,9 @@
 #include <carambola/model.hpp>
 #include <carambola/node.hpp>
 #include <carambola/elements/beam3d.hpp>
+#include <carambola/elements/shell3d.hpp>
+
+
 
 namespace carambola {
 
@@ -76,10 +79,18 @@ public:
       double beam_moment_y(
           const Beam3D& beam
       ) const;
-
-      double beam_moment_z(
-          const Beam3D& beam
+      
+    Eigen::Vector3d shell_membrane_strain(
+          const Shell3D& shell
       ) const;
+
+    Eigen::Vector3d shell_membrane_stress(
+          const Shell3D& shell
+      ) const;
+            double beam_moment_z(
+                const Beam3D& beam
+            ) const;
+
 
 
 private:

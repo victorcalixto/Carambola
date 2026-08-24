@@ -470,7 +470,19 @@ PYBIND11_MODULE(_carambola, m)
           "beam_moment_z",
           &carambola::AnalysisResult::beam_moment_z,
           py::arg("beam")
-      );
+      )
+    .def(
+        "shell_membrane_strain",
+        &carambola::AnalysisResult::
+            shell_membrane_strain,
+        py::arg("shell")
+    )
+    .def(
+        "shell_membrane_stress",
+        &carambola::AnalysisResult::
+            shell_membrane_stress,
+        py::arg("shell")
+    );
 
     py::class_<carambola::LinearStaticSolver>(
       m,
@@ -661,6 +673,25 @@ py::class_<carambola::Shell3D>(
     .def(
         "membrane_stiffness_matrix",
         &carambola::Shell3D::membrane_stiffness_matrix
+    )
+
+    .def(
+        "local_membrane_displacements",
+        &carambola::Shell3D::
+            local_membrane_displacements,
+        py::arg("displacements")
+    )
+    .def(
+        "membrane_strain",
+        &carambola::Shell3D::
+            membrane_strain,
+        py::arg("displacements")
+    )
+    .def(
+        "membrane_stress",
+        &carambola::Shell3D::
+            membrane_stress,
+        py::arg("displacements")
     );
 
 }

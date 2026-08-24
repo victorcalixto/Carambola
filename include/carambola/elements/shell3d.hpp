@@ -45,6 +45,19 @@ public:
     Eigen::Matrix<double, 9, 9>
     membrane_stiffness_matrix() const;
 
+    Eigen::Matrix<double, 6, 1>
+    local_membrane_displacements(
+        const Eigen::VectorXd& displacements
+    ) const;
+
+    Eigen::Vector3d membrane_strain(
+        const Eigen::VectorXd& displacements
+    ) const;
+
+    Eigen::Vector3d membrane_stress(
+        const Eigen::VectorXd& displacements
+    ) const;
+
 private:
     const Node* node_a_;
     const Node* node_b_;

@@ -169,6 +169,31 @@ double AnalysisResult::truss_force(
     );
 }
 
+Eigen::Vector3d
+AnalysisResult::shell_membrane_strain(
+    const Shell3D& shell
+) const
+{
+    return shell.membrane_strain(
+        displacements_
+    );
+}
+
+Eigen::Vector3d
+AnalysisResult::shell_membrane_stress(
+    const Shell3D& shell
+) const
+{
+    return shell.membrane_stress(
+        displacements_
+    );
+}
+
+
+
+
+
+
 Eigen::Matrix<double, 12, 1>
 AnalysisResult::beam_local_end_forces(
     const Beam3D& beam
@@ -468,5 +493,9 @@ AnalysisResult LinearStaticSolver::solve() const
         std::move(reactions)
     );
 }
+
+
+
+
 
 } // namespace carambola

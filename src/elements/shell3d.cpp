@@ -2,6 +2,9 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <carambola/dof.hpp>
+
+
 
 namespace carambola {
 
@@ -320,5 +323,124 @@ Shell3D::membrane_stiffness_matrix() const
         * Klocal
         * T;
 }
+
+
+Eigen::Matrix<double, 6, 1>
+Shell3D::local_membrane_displacements(
+    const Eigen::VectorXd& displacements
+) const
+{
+    const std::size_t a =
+        node_a_->id();
+
+    const std::size_t b =
+        node_b_->id();
+
+    const std::size_t c =
+        node_c_->id();
+
+    const Eigen::Matrix3d R =
+        rotation_matrix();
+
+    const Eigen::Vector3d ua_global(
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(a, Dof::UX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(a, Dof::UY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(a, Dof::UZ)
+            )
+        )
+    );
+
+    const Eigen::Vector3d ub_global(
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(b, Dof::UX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(b, Dof::UY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(b, Dof::UZ)
+            )
+        )
+    );
+
+    const Eigen::Vector3d uc_global(
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(c, Dof::UX)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(c, Dof::UY)
+            )
+        ),
+        displacements(
+            static_cast<Eigen::Index>(
+                dof_index(c, Dof::UZ)
+            )
+        )
+    );
+
+    const Eigen::Vector3d ua_local =
+        R * ua_global;
+
+    const Eigen::Vector3d ub_local =
+        R * ub_global;
+
+    const Eigen::Vector3d uc_local =
+        R * uc_global;
+
+    Eigen::Matrix<double, 6, 1> u;
+
+    u <<
+        ua_local.x(),
+        ua_local.y(),
+
+        ub_local.x(),
+        ub_local.y(),
+
+        uc_local.x(),
+        uc_local.y();
+
+    return u;
+}
+
+Eigen::Vector3d Shell3D::membrane_strain(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return strain_displacement_matrix()
+        * local_membrane_displacements(
+            displacements
+        );
+}
+
+Eigen::Vector3d Shell3D::membrane_stress(
+    const Eigen::VectorXd& displacements
+) const
+{
+    return constitutive_matrix()
+        * membrane_strain(
+            displacements
+        );
+}
+
+
+
 
 } // namespace carambola
