@@ -35,5 +35,5 @@ __all__ = [
     "Beam3D",
     "UniformBeamLoad",
     "ShellProperty",
-    "Shell3D",
+    "Shell3D"
 ]

@@ -123,6 +123,25 @@ Model::uniform_beam_loads() const
     return uniform_beam_loads_;
 }
 
+Shell3D& Model::add_shell(
+    const Node& node_a,
+    const Node& node_b,
+    const Node& node_c,
+    const ShellProperty& property
+)
+{
+    shells_.emplace_back(
+        node_a,
+        node_b,
+        node_c,
+        property
+    );
+
+    return shells_.back();
+}
+
+
+
 
 
 std::size_t Model::node_count() const
@@ -150,6 +169,23 @@ std::size_t Model::beam_count() const
     return beams_.size();
 }
 
+std::size_t Model::shell_count() const
+{
+    return shells_.size();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const std::deque<Node>& Model::nodes() const
 {
@@ -175,6 +211,16 @@ const std::deque<Beam3D>& Model::beams() const
 {
     return beams_;
 }
+
+
+const std::deque<Shell3D>&
+Model::shells() const
+{
+    return shells_;
+}
+
+
+
 
 
 

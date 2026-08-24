@@ -341,6 +341,25 @@ PYBIND11_MODULE(_carambola, m)
           &carambola::Model::
               uniform_beam_loads,
           py::return_value_policy::reference_internal
+      )
+      .def(
+          "add_shell",
+          &carambola::Model::add_shell,
+          py::arg("node_a"),
+          py::arg("node_b"),
+          py::arg("node_c"),
+          py::arg("property"),
+          py::return_value_policy::reference_internal,
+          py::keep_alive<1, 5>()
+      )
+      .def_property_readonly(
+          "shell_count",
+          &carambola::Model::shell_count
+      )
+      .def_property_readonly(
+          "shells",
+          &carambola::Model::shells,
+          py::return_value_policy::reference_internal
       );
 
     py::class_<carambola::Assembler>(m, "Assembler")
@@ -587,4 +606,61 @@ PYBIND11_MODULE(_carambola, m)
         "thickness",
         &carambola::ShellProperty::thickness
     );
+py::class_<carambola::Shell3D>(
+    m,
+    "Shell3D"
+)
+    .def(
+        py::init<
+            const carambola::Node&,
+            const carambola::Node&,
+            const carambola::Node&,
+            const carambola::ShellProperty&
+        >(),
+        py::arg("node_a"),
+        py::arg("node_b"),
+        py::arg("node_c"),
+        py::arg("property"),
+        py::keep_alive<1, 2>(),
+        py::keep_alive<1, 3>(),
+        py::keep_alive<1, 4>(),
+        py::keep_alive<1, 5>()
+    )
+    .def_property_readonly(
+        "area",
+        &carambola::Shell3D::area
+    )
+    .def_property_readonly(
+        "local_x",
+        &carambola::Shell3D::local_x
+    )
+    .def_property_readonly(
+        "local_y",
+        &carambola::Shell3D::local_y
+    )
+    .def_property_readonly(
+        "local_z",
+        &carambola::Shell3D::local_z
+    )
+    .def(
+        "rotation_matrix",
+        &carambola::Shell3D::rotation_matrix
+    )
+    .def(
+        "strain_displacement_matrix",
+        &carambola::Shell3D::strain_displacement_matrix
+    )
+    .def(
+        "constitutive_matrix",
+        &carambola::Shell3D::constitutive_matrix
+    )
+    .def(
+        "local_membrane_stiffness_matrix",
+        &carambola::Shell3D::local_membrane_stiffness_matrix
+    )
+    .def(
+        "membrane_stiffness_matrix",
+        &carambola::Shell3D::membrane_stiffness_matrix
+    );
+
 }

@@ -3,6 +3,110 @@ import pytest
 
 import carambola as cb
 
+def test_shell_reference_remains_valid():
+    model = cb.Model()
+
+    steel = cb.Material(
+        "Steel",
+        200e9,
+        0.3,
+        7850.0,
+    )
+
+    prop = cb.ShellProperty(
+        steel,
+        0.01,
+    )
+
+    n0 = model.add_node(0.0, 0.0, 0.0)
+    n1 = model.add_node(1.0, 0.0, 0.0)
+    n2 = model.add_node(0.0, 1.0, 0.0)
+
+    shell = model.add_shell(
+        n0,
+        n1,
+        n2,
+        prop,
+    )
+
+    for i in range(100):
+        a = model.add_node(
+            float(i + 10),
+            0.0,
+            0.0,
+        )
+
+        b = model.add_node(
+            float(i + 10),
+            1.0,
+            0.0,
+        )
+
+        c = model.add_node(
+            float(i + 11),
+            0.0,
+            0.0,
+        )
+
+        model.add_shell(
+            a,
+            b,
+            c,
+            prop,
+        )
+
+    assert shell.area == pytest.approx(
+        0.5
+    )
+
+def test_model_owns_shell():
+    model = cb.Model()
+
+    n0 = model.add_node(
+        0.0, 0.0, 0.0
+    )
+
+    n1 = model.add_node(
+        2.0, 0.0, 0.0
+    )
+
+    n2 = model.add_node(
+        0.0, 1.0, 0.0
+    )
+
+    steel = cb.Material(
+        "Steel",
+        200e9,
+        0.3,
+        7850.0,
+    )
+
+    prop = cb.ShellProperty(
+        steel,
+        0.01,
+    )
+
+    shell = model.add_shell(
+        n0,
+        n1,
+        n2,
+        prop,
+    )
+
+    assert model.shell_count == 1
+
+    assert len(model.shells) == 1
+
+    assert model.shells[0].area == pytest.approx(
+        1.0
+    )
+
+    assert shell.area == pytest.approx(
+        1.0
+    )
+
+
+
 
 def make_shell():
     model = cb.Model()
