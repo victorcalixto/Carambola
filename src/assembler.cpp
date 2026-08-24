@@ -30,6 +30,7 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
     triplets.reserve(
     model_->truss_count() * 36
     + model_->beam_count() * 144
+    + model_->shell_count() * 81
     );
 
     for (const auto& truss : model_->trusses()) {
@@ -126,7 +127,76 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
             }
         }
     }
+}   
+    
+
+for (const auto& shell : model_->shells()) {
+    const auto Ke =
+        shell.membrane_stiffness_matrix();
+
+    const std::size_t a =
+        shell.node_a().id();
+
+    const std::size_t b =
+        shell.node_b().id();
+
+    const std::size_t c =
+        shell.node_c().id();
+
+    /*
+     * Shell membrane matrix:
+     *
+     * node A: UX UY UZ
+     * node B: UX UY UZ
+     * node C: UX UY UZ
+     *
+     * Rotational DOFs are intentionally not
+     * included yet.
+     */
+    const std::array<std::size_t, 9> dofs = {
+        dof_index(a, Dof::UX),
+        dof_index(a, Dof::UY),
+        dof_index(a, Dof::UZ),
+
+        dof_index(b, Dof::UX),
+        dof_index(b, Dof::UY),
+        dof_index(b, Dof::UZ),
+
+        dof_index(c, Dof::UX),
+        dof_index(c, Dof::UY),
+        dof_index(c, Dof::UZ),
+    };
+
+    for (std::size_t row = 0;
+         row < 9;
+         ++row) {
+
+        for (std::size_t col = 0;
+             col < 9;
+             ++col) {
+
+            const double value = Ke(
+                static_cast<Eigen::Index>(row),
+                static_cast<Eigen::Index>(col)
+            );
+
+            if (value != 0.0) {
+                triplets.emplace_back(
+                    static_cast<Eigen::Index>(
+                        dofs[row]
+                    ),
+                    static_cast<Eigen::Index>(
+                        dofs[col]
+                    ),
+                    value
+                );
+            }
+        }
+    }
 }
+
+
+
     K.setFromTriplets(
         triplets.begin(),
         triplets.end()
