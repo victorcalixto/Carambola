@@ -1,5 +1,5 @@
 import numpy as np
-
+import pytest
 import carambola as cb
 
 
@@ -72,9 +72,7 @@ def test_shell_global_assembly_symmetric():
         dense,
         dense.T,
     )
-
-
-def test_shell_translation_block_matches_element():
+def test_shell_full_block_matches_element():
     model, shell = make_shell_model()
 
     K = cb.Assembler(
@@ -85,33 +83,10 @@ def test_shell_translation_block_matches_element():
         K.todense()
     )
 
-    # Global translational DOFs:
-    #
-    # node 0:
-    # UX = 0
-    # UY = 1
-    # UZ = 2
-    #
-    # node 1:
-    # UX = 6
-    # UY = 7
-    # UZ = 8
-    #
-    # node 2:
-    # UX = 12
-    # UY = 13
-    # UZ = 14
-
     shell_dofs = [
-        0,
-        1,
-        2,
-        6,
-        7,
-        8,
-        12,
-        13,
-        14,
+        0, 1, 2, 3, 4, 5,
+        6, 7, 8, 9, 10, 11,
+        12, 13, 14, 15, 16, 17,
     ]
 
     actual = dense[
@@ -122,16 +97,48 @@ def test_shell_translation_block_matches_element():
     ]
 
     expected = (
-        shell.membrane_stiffness_matrix()
+        shell.stiffness_matrix()
     )
 
     assert np.allclose(
         actual,
         expected,
+        atol=1e-8,
     )
 
+def test_shell_drilling_rotations_are_stabilized():
+    model, shell = make_shell_model()
 
-def test_shell_has_no_rotational_stiffness_yet():
+    K = cb.Assembler(
+        model
+    ).stiffness_matrix()
+
+    dense = np.asarray(
+        K.todense()
+    )
+
+    kd = shell._drilling_stiffness()
+
+    # XY-plane shell:
+    # node 0 RZ -> 5
+    # node 1 RZ -> 11
+    # node 2 RZ -> 17
+
+    drilling_dofs = [
+        5,
+        11,
+        17,
+    ]
+
+    for dof in drilling_dofs:
+        assert dense[
+            dof,
+            dof
+        ] == pytest.approx(
+            kd
+        )
+
+def test_shell_drilling_stabilization_has_no_cross_coupling():
     model, _ = make_shell_model()
 
     K = cb.Assembler(
@@ -142,32 +149,45 @@ def test_shell_has_no_rotational_stiffness_yet():
         K.todense()
     )
 
-    # Rotational DOFs:
-    #
-    # node 0: RX RY RZ -> 3 4 5
-    # node 1: RX RY RZ -> 9 10 11
-    # node 2: RX RY RZ -> 15 16 17
-
-    rotational_dofs = [
-        3,
-        4,
+    drilling_dofs = [
         5,
-        9,
-        10,
         11,
-        15,
-        16,
         17,
+    ]
+
+    for i in drilling_dofs:
+        for j in drilling_dofs:
+            if i != j:
+                assert dense[i, j] == pytest.approx(
+                    0.0,
+                    abs=1e-12,
+                )
+
+
+def test_shell_has_bending_rotational_stiffness():
+    model, _ = make_shell_model()
+
+    K = cb.Assembler(
+        model
+    ).stiffness_matrix()
+
+    dense = np.asarray(
+        K.todense()
+    )
+
+    bending_rotations = [
+        3, 4,
+        9, 10,
+        15, 16,
     ]
 
     block = dense[
         np.ix_(
-            rotational_dofs,
-            rotational_dofs,
+            bending_rotations,
+            bending_rotations,
         )
     ]
 
-    assert np.allclose(
-        block,
-        0.0,
+    assert np.any(
+        np.abs(block) > 1e-12
     )

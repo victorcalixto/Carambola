@@ -30,7 +30,7 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
     triplets.reserve(
     model_->truss_count() * 36
     + model_->beam_count() * 144
-    + model_->shell_count() * 81
+    + model_->shell_count() * 324
     );
 
     for (const auto& truss : model_->trusses()) {
@@ -132,62 +132,63 @@ Eigen::SparseMatrix<double> Assembler::stiffness_matrix() const
 
 for (const auto& shell : model_->shells()) {
     const auto Ke =
-        shell.membrane_stiffness_matrix();
+        shell.stiffness_matrix();
 
-    const std::size_t a =
-        shell.node_a().id();
-
-    const std::size_t b =
-        shell.node_b().id();
-
-    const std::size_t c =
-        shell.node_c().id();
-
-    /*
-     * Shell membrane matrix:
-     *
-     * node A: UX UY UZ
-     * node B: UX UY UZ
-     * node C: UX UY UZ
-     *
-     * Rotational DOFs are intentionally not
-     * included yet.
-     */
-    const std::array<std::size_t, 9> dofs = {
-        dof_index(a, Dof::UX),
-        dof_index(a, Dof::UY),
-        dof_index(a, Dof::UZ),
-
-        dof_index(b, Dof::UX),
-        dof_index(b, Dof::UY),
-        dof_index(b, Dof::UZ),
-
-        dof_index(c, Dof::UX),
-        dof_index(c, Dof::UY),
-        dof_index(c, Dof::UZ),
+    const std::size_t node_ids[3] = {
+        shell.node_a().id(),
+        shell.node_b().id(),
+        shell.node_c().id()
     };
 
-    for (std::size_t row = 0;
-         row < 9;
-         ++row) {
+    Eigen::Index global_dofs[18];
 
-        for (std::size_t col = 0;
-             col < 9;
-             ++col) {
+    for (int node = 0; node < 3; ++node) {
+        const std::size_t id =
+            node_ids[node];
 
-            const double value = Ke(
-                static_cast<Eigen::Index>(row),
-                static_cast<Eigen::Index>(col)
+        const int offset =
+            node * 6;
+
+        global_dofs[offset + 0] =
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::UX)
             );
+
+        global_dofs[offset + 1] =
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::UY)
+            );
+
+        global_dofs[offset + 2] =
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::UZ)
+            );
+
+        global_dofs[offset + 3] =
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RX)
+            );
+
+        global_dofs[offset + 4] =
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RY)
+            );
+
+        global_dofs[offset + 5] =
+            static_cast<Eigen::Index>(
+                dof_index(id, Dof::RZ)
+            );
+    }
+
+    for (int i = 0; i < 18; ++i) {
+        for (int j = 0; j < 18; ++j) {
+            const double value =
+                Ke(i, j);
 
             if (value != 0.0) {
                 triplets.emplace_back(
-                    static_cast<Eigen::Index>(
-                        dofs[row]
-                    ),
-                    static_cast<Eigen::Index>(
-                        dofs[col]
-                    ),
+                    global_dofs[i],
+                    global_dofs[j],
                     value
                 );
             }
@@ -306,8 +307,71 @@ Eigen::VectorXd Assembler::force_vector() const
     }
 }
 
+
+    for (
+    const auto& load :
+    model_->uniform_shell_pressures()
+) {
+    const Shell3D& shell =
+        load.shell();
+
+    const auto f =
+        shell.pressure_load_vector(
+            load.pressure()
+        );
+
+    const std::size_t node_ids[3] = {
+        shell.node_a().id(),
+        shell.node_b().id(),
+        shell.node_c().id()
+    };
+
+    std::array<std::size_t, 18> dofs;
+
+    for (int node = 0; node < 3; ++node) {
+        const std::size_t id =
+            node_ids[node];
+
+        const int offset =
+            node * 6;
+
+        dofs[offset + 0] =
+            dof_index(id, Dof::UX);
+
+        dofs[offset + 1] =
+            dof_index(id, Dof::UY);
+
+        dofs[offset + 2] =
+            dof_index(id, Dof::UZ);
+
+        dofs[offset + 3] =
+            dof_index(id, Dof::RX);
+
+        dofs[offset + 4] =
+            dof_index(id, Dof::RY);
+
+        dofs[offset + 5] =
+            dof_index(id, Dof::RZ);
+    }
+
+    for (std::size_t k = 0;
+         k < 18;
+         ++k) {
+
+        F(
+            static_cast<Eigen::Index>(
+                dofs[k]
+            )
+        ) += f(
+            static_cast<Eigen::Index>(k)
+        );
+    }
+}
+    
+
     return F;
 }
+
 
 std::vector<std::size_t>
 Assembler::constrained_dofs() const

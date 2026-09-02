@@ -9,6 +9,11 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <cmath>
+
+
+#include "carambola/results.hpp"
+
 
 namespace carambola {
 
@@ -189,7 +194,33 @@ AnalysisResult::shell_membrane_stress(
     );
 }
 
+Eigen::Vector3d
+AnalysisResult::shell_bending_curvature(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return shell.bending_curvature(
+        xi,
+        eta,
+        displacements_
+    );
+}
 
+Eigen::Vector3d
+AnalysisResult::shell_bending_moments(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return shell.bending_moments(
+        xi,
+        eta,
+        displacements_
+    );
+}
 
 
 
@@ -494,6 +525,202 @@ AnalysisResult LinearStaticSolver::solve() const
     );
 }
 
+
+Eigen::Vector3d
+AnalysisResult::shell_bending_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta,
+    double z
+) const
+{
+    return shell.bending_stress(
+        xi,
+        eta,
+        z,
+        displacements_
+    );
+}
+
+
+Eigen::Vector3d
+AnalysisResult::shell_top_bending_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    const double z =
+        shell.property().thickness()
+        / 2.0;
+
+    return shell.bending_stress(
+        xi,
+        eta,
+        z,
+        displacements_
+    );
+}
+
+Eigen::Vector3d
+AnalysisResult::shell_bottom_bending_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    const double z =
+        -shell.property().thickness()
+        / 2.0;
+
+    return shell.bending_stress(
+        xi,
+        eta,
+        z,
+        displacements_
+    );
+}
+
+
+
+Eigen::Vector3d
+AnalysisResult::shell_top_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    const Eigen::Vector3d membrane =
+        shell.membrane_stress(displacements_);
+
+    const Eigen::Vector3d bending =
+        shell_top_bending_stress(
+            shell,
+            xi,
+            eta
+        );
+
+    return membrane + bending;
+}
+
+Eigen::Vector3d
+AnalysisResult::shell_bottom_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    const Eigen::Vector3d membrane =
+        shell.membrane_stress(displacements_);
+
+    const Eigen::Vector3d bending =
+        shell_bottom_bending_stress(
+            shell,
+            xi,
+            eta
+        );
+
+    return membrane + bending;
+}
+
+
+
+double
+AnalysisResult::shell_top_von_mises(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return plane_stress_von_mises(
+        shell_top_stress(
+            shell,
+            xi,
+            eta
+        )
+    );
+}
+
+double
+AnalysisResult::shell_bottom_von_mises(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return plane_stress_von_mises(
+        shell_bottom_stress(
+            shell,
+            xi,
+            eta
+        )
+    );
+}
+
+Eigen::Vector2d
+AnalysisResult::shell_top_principal_stresses(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return plane_principal_stresses(
+        shell_top_stress(
+            shell,
+            xi,
+            eta
+        )
+    );
+}
+
+Eigen::Vector2d
+AnalysisResult::shell_bottom_principal_stresses(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return plane_principal_stresses(
+        shell_bottom_stress(
+            shell,
+            xi,
+            eta
+        )
+    );
+}
+
+
+double
+AnalysisResult::shell_top_principal_angle(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return plane_principal_angle(
+        shell_top_stress(
+            shell,
+            xi,
+            eta
+        )
+    );
+}
+
+double
+AnalysisResult::shell_bottom_principal_angle(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const
+{
+    return plane_principal_angle(
+        shell_bottom_stress(
+            shell,
+            xi,
+            eta
+        )
+    );
+}
 
 
 

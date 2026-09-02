@@ -177,7 +177,7 @@ def test_shell_membrane_stress_matches_constitutive_law():
     )
 
     expected = (
-        shell.constitutive_matrix()
+        shell._constitutive_matrix()
         @ strain
     )
 

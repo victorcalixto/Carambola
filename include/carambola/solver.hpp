@@ -92,6 +92,99 @@ public:
             ) const;
 
 
+    Eigen::Vector3d shell_bending_curvature(
+        const Shell3D& shell,
+        double xi,
+        double eta
+    ) const;
+
+    Eigen::Vector3d shell_bending_moments(
+        const Shell3D& shell,
+        double xi,
+        double eta
+    ) const;
+
+Eigen::Vector3d shell_bending_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta,
+    double z
+) const;
+
+
+Eigen::Vector3d shell_top_bending_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+Eigen::Vector3d shell_bottom_bending_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+
+
+double shell_top_von_mises(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+double shell_bottom_von_mises(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+
+
+Eigen::Vector2d shell_top_principal_stresses(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+Eigen::Vector2d shell_bottom_principal_stresses(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+
+
+
+
+Eigen::Vector3d shell_top_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+Eigen::Vector3d shell_bottom_stress(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+
+
+double shell_top_principal_angle(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+double shell_bottom_principal_angle(
+    const Shell3D& shell,
+    double xi,
+    double eta
+) const;
+
+
+
+
 
 private:
     const Model* model_;

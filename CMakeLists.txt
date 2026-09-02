@@ -36,6 +36,10 @@ add_library(
     src/elements/beam3d.cpp
     src/shell_property.cpp
     src/elements/shell3d.cpp
+    src/beam_load.cpp
+    src/shell_load.cpp
+    src/results.cpp
+    src/mesh.cpp
 )
 
 target_include_directories(

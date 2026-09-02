@@ -16,6 +16,12 @@ from ._carambola import (
     UniformBeamLoad,
     ShellProperty,
     Shell3D,
+    UniformShellPressure,
+    plane_stress_von_mises,
+    plane_principal_stresses,
+    plane_principal_angle,
+    ShellMesh,
+    rectangular_shell_mesh,
 )
 
 __all__ = [
@@ -35,5 +41,11 @@ __all__ = [
     "Beam3D",
     "UniformBeamLoad",
     "ShellProperty",
-    "Shell3D"
+    "Shell3D",
+    "UniformShellPressure",
+    "plane_stress_von_mises",
+    "plane_principal_stresses",
+    "plane_principal_angle",
+    "ShellMesh",
+    "rectangular_shell_mesh",
 ]
