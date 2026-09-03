@@ -4,9 +4,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux-wheels:
-    name: Build Linux wheels
-    runs-on: ubuntu-latest
+  build-wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-15-intel
+          - macos-14
 
     steps:
       - name: Checkout repository
@@ -22,18 +31,31 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install cibuildwheel
 
+      - name: Install Eigen on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libeigen3-dev
+
+      - name: Install Eigen on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install eigen
+
+      - name: Install Eigen on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          vcpkg install eigen3:x64-windows
+          "CMAKE_PREFIX_PATH=$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows;$env:CMAKE_PREFIX_PATH" >> $env:GITHUB_ENV
+
       - name: Build wheels
         env:
           CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
-
-          CIBW_SKIP: "*-musllinux*"
+          CIBW_SKIP: "*-musllinux* *-win32"
 
           CIBW_ARCHS_LINUX: "x86_64"
-
-          CIBW_BEFORE_ALL_LINUX: >
-            dnf install -y eigen3-devel
-
-          CIBW_TEST_REQUIRES: "pytest"
+          CIBW_ARCHS_WINDOWS: "AMD64"
 
           CIBW_TEST_COMMAND: >
             python -c "import carambola; print('Carambola:', carambola.version())"
@@ -42,11 +64,12 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
 
       - name: List wheels
+        shell: bash
         run: |
           ls -lh wheelhouse/
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: carambola-linux-wheels
+          name: carambola-wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
