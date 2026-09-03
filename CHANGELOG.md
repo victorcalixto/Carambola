@@ -2,6 +2,25 @@
 
 All notable changes to Carambola are documented in this file.
 
+
+## [0.1.2] - 2026-09-03
+
+### Fixed
+
+- Improved cross-platform C++ portability by replacing non-portable `M_PI` usage.
+- Fixed Linux wheel builds by installing Eigen inside the manylinux build container.
+- Added validated wheel builds for:
+  - Linux x86_64
+  - Windows x86_64
+  - macOS x86_64
+  - macOS arm64
+
+### Changed
+
+- Prepared Carambola for cross-platform PyPI distribution.
+
+
+
 ## [0.1.1] - 2026-09-03
 
 ### Fixed
