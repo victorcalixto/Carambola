@@ -1,0 +1,53 @@
+{
+  "format": "carambola-result",
+  "version": 1,
+  "analysis": {
+    "type": "linear_static"
+  },
+  "model": {
+    "node_count": 2,
+    "truss_count": 0,
+    "beam_count": 1,
+    "shell_count": 0
+  },
+  "displacements": [
+    {
+      "node": 0,
+      "ux": 0.0,
+      "uy": 0.0,
+      "uz": 0.0,
+      "rx": 0.0,
+      "ry": 0.0,
+      "rz": 0.0
+    },
+    {
+      "node": 1,
+      "ux": 0.0,
+      "uy": 0.0,
+      "uz": -0.0007619047619047618,
+      "rx": 0.0,
+      "ry": 0.0005714285714285714,
+      "rz": 0.0
+    }
+  ],
+  "reactions": [
+    {
+      "node": 0,
+      "fx": 0.0,
+      "fy": 0.0,
+      "fz": 1000.0,
+      "mx": 0.0,
+      "my": -2000.0000000000007,
+      "mz": 0.0
+    },
+    {
+      "node": 1,
+      "fx": 0.0,
+      "fy": 0.0,
+      "fz": 0.0,
+      "mx": 0.0,
+      "my": -4.547473508864641e-13,
+      "mz": 0.0
+    }
+  ]
+}

@@ -47,6 +47,12 @@ Beam3D::Beam3D(
     }
 }
 
+
+const Eigen::Vector3d& Beam3D::orientation() const {
+    return orientation_;
+}
+
+
 const Node& Beam3D::node_start() const
 {
     return *node_start_;

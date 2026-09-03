@@ -214,6 +214,32 @@ PYBIND11_MODULE(_carambola, m)
             py::keep_alive<1, 4>(),
             py::keep_alive<1, 5>()
         )
+
+        // Definition.
+
+        .def_property_readonly(
+            "node_start",
+            &carambola::Truss3D::node_start,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "node_end",
+            &carambola::Truss3D::node_end,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "material",
+            &carambola::Truss3D::material,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "section",
+            &carambola::Truss3D::section,
+            py::return_value_policy::reference_internal
+        )
+
+        // Geometry.
+
         .def_property_readonly(
             "length",
             &carambola::Truss3D::length
@@ -222,10 +248,16 @@ PYBIND11_MODULE(_carambola, m)
             "direction",
             &carambola::Truss3D::direction
         )
+
+        // Stiffness.
+
         .def(
             "stiffness_matrix",
             &carambola::Truss3D::stiffness_matrix
         )
+
+        // Results.
+
         .def(
             "axial_deformation",
             &carambola::Truss3D::axial_deformation,
@@ -279,6 +311,36 @@ PYBIND11_MODULE(_carambola, m)
             py::keep_alive<1, 4>(),
             py::keep_alive<1, 5>()
         )
+
+        // Definition.
+
+        .def_property_readonly(
+            "node_start",
+            &carambola::Beam3D::node_start,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "node_end",
+            &carambola::Beam3D::node_end,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "material",
+            &carambola::Beam3D::material,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "section",
+            &carambola::Beam3D::section,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "orientation",
+            &carambola::Beam3D::orientation
+        )
+
+        // Geometry / coordinate system.
+
         .def_property_readonly(
             "length",
             &carambola::Beam3D::length
@@ -299,6 +361,9 @@ PYBIND11_MODULE(_carambola, m)
             "rotation_matrix",
             &carambola::Beam3D::rotation_matrix
         )
+
+        // Stiffness / transformations.
+
         .def(
             "local_stiffness_matrix",
             &carambola::Beam3D::local_stiffness_matrix
@@ -311,6 +376,9 @@ PYBIND11_MODULE(_carambola, m)
             "stiffness_matrix",
             &carambola::Beam3D::stiffness_matrix
         )
+
+        // Results.
+
         .def(
             "element_displacements",
             &carambola::Beam3D::element_displacements,
@@ -329,13 +397,18 @@ PYBIND11_MODULE(_carambola, m)
 
 
     // -------------------------------------------------------------------------
-    // Supports and loads
+    // Support
     // -------------------------------------------------------------------------
 
     py::class_<carambola::Support>(
         m,
         "Support"
     )
+        .def_property_readonly(
+            "node",
+            &carambola::Support::node,
+            py::return_value_policy::reference_internal
+        )
         .def_property_readonly(
             "ux",
             &carambola::Support::ux
@@ -362,10 +435,19 @@ PYBIND11_MODULE(_carambola, m)
         );
 
 
+    // -------------------------------------------------------------------------
+    // PointLoad
+    // -------------------------------------------------------------------------
+
     py::class_<carambola::PointLoad>(
         m,
         "PointLoad"
     )
+        .def_property_readonly(
+            "node",
+            &carambola::PointLoad::node,
+            py::return_value_policy::reference_internal
+        )
         .def_property_readonly(
             "fx",
             &carambola::PointLoad::fx
@@ -392,10 +474,19 @@ PYBIND11_MODULE(_carambola, m)
         );
 
 
+    // -------------------------------------------------------------------------
+    // UniformBeamLoad
+    // -------------------------------------------------------------------------
+
     py::class_<carambola::UniformBeamLoad>(
         m,
         "UniformBeamLoad"
     )
+        .def_property_readonly(
+            "beam",
+            &carambola::UniformBeamLoad::beam,
+            py::return_value_policy::reference_internal
+        )
         .def_property_readonly(
             "qx",
             &carambola::UniformBeamLoad::qx
@@ -420,10 +511,19 @@ PYBIND11_MODULE(_carambola, m)
         );
 
 
+    // -------------------------------------------------------------------------
+    // UniformShellPressure
+    // -------------------------------------------------------------------------
+
     py::class_<carambola::UniformShellPressure>(
         m,
         "UniformShellPressure"
     )
+        .def_property_readonly(
+            "shell",
+            &carambola::UniformShellPressure::shell,
+            py::return_value_policy::reference_internal
+        )
         .def_property_readonly(
             "pressure",
             &carambola::UniformShellPressure::pressure
@@ -431,7 +531,7 @@ PYBIND11_MODULE(_carambola, m)
 
 
     // -------------------------------------------------------------------------
-    // Shell property
+    // ShellProperty
     // -------------------------------------------------------------------------
 
     py::class_<carambola::ShellProperty>(
@@ -489,8 +589,28 @@ PYBIND11_MODULE(_carambola, m)
             py::keep_alive<1, 5>()
         )
 
-        // Public geometry API.
+        // Definition / geometry.
 
+        .def_property_readonly(
+            "node_a",
+            &carambola::Shell3D::node_a,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "node_b",
+            &carambola::Shell3D::node_b,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "node_c",
+            &carambola::Shell3D::node_c,
+            py::return_value_policy::reference_internal
+        )
+        .def_property_readonly(
+            "property",
+            &carambola::Shell3D::property,
+            py::return_value_policy::reference_internal
+        )
         .def_property_readonly(
             "area",
             &carambola::Shell3D::area
@@ -512,14 +632,14 @@ PYBIND11_MODULE(_carambola, m)
             &carambola::Shell3D::rotation_matrix
         )
 
-        // Public stiffness API.
+        // Public stiffness.
 
         .def(
             "stiffness_matrix",
             &carambola::Shell3D::stiffness_matrix
         )
 
-        // Public membrane result API.
+        // Public membrane results.
 
         .def(
             "membrane_strain",
@@ -532,7 +652,7 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("displacements")
         )
 
-        // Public bending result API.
+        // Public bending results.
 
         .def(
             "bending_curvature",
@@ -561,11 +681,12 @@ PYBIND11_MODULE(_carambola, m)
 
         .def(
             "pressure_load_vector",
-            &carambola::Shell3D::pressure_load_vector
+            &carambola::Shell3D::pressure_load_vector,
+            py::arg("pressure")
         )
 
         // ---------------------------------------------------------------------
-        // Internal membrane formulation API.
+        // Internal membrane formulation.
         // ---------------------------------------------------------------------
 
         .def(
@@ -614,7 +735,7 @@ PYBIND11_MODULE(_carambola, m)
         )
 
         // ---------------------------------------------------------------------
-        // Internal DKT formulation API.
+        // Internal DKT formulation.
         // ---------------------------------------------------------------------
 
         .def(
@@ -664,7 +785,7 @@ PYBIND11_MODULE(_carambola, m)
         )
 
         // ---------------------------------------------------------------------
-        // Internal stiffness / stabilization API.
+        // Internal stiffness / stabilization.
         // ---------------------------------------------------------------------
 
         .def(
@@ -685,7 +806,7 @@ PYBIND11_MODULE(_carambola, m)
 
 
     // -------------------------------------------------------------------------
-    // Shell mesh
+    // ShellMesh
     // -------------------------------------------------------------------------
 
     py::class_<carambola::ShellMesh>(
@@ -724,7 +845,9 @@ PYBIND11_MODULE(_carambola, m)
             py::init<>()
         )
 
-        // Nodes.
+        // ---------------------------------------------------------------------
+        // Nodes
+        // ---------------------------------------------------------------------
 
         .def(
             "add_node",
@@ -739,7 +862,9 @@ PYBIND11_MODULE(_carambola, m)
             &carambola::Model::node_count
         )
 
-        // Trusses.
+        // ---------------------------------------------------------------------
+        // Trusses
+        // ---------------------------------------------------------------------
 
         .def(
             "add_truss",
@@ -762,7 +887,9 @@ PYBIND11_MODULE(_carambola, m)
             py::return_value_policy::reference_internal
         )
 
-        // Beams.
+        // ---------------------------------------------------------------------
+        // Beams
+        // ---------------------------------------------------------------------
 
         .def(
             "add_beam",
@@ -791,7 +918,9 @@ PYBIND11_MODULE(_carambola, m)
             py::return_value_policy::reference_internal
         )
 
-        // Shells.
+        // ---------------------------------------------------------------------
+        // Shells
+        // ---------------------------------------------------------------------
 
         .def(
             "add_shell",
@@ -813,7 +942,9 @@ PYBIND11_MODULE(_carambola, m)
             py::return_value_policy::reference_internal
         )
 
-        // Supports.
+        // ---------------------------------------------------------------------
+        // Supports
+        // ---------------------------------------------------------------------
 
         .def(
             "add_support",
@@ -827,18 +958,19 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("rz") = false,
             py::return_value_policy::reference_internal
         )
-        
         .def_property_readonly(
             "support_count",
             &carambola::Model::support_count
         )
-
         .def_property_readonly(
             "supports",
             &carambola::Model::supports,
             py::return_value_policy::reference_internal
         )
-            // Point loads.
+
+        // ---------------------------------------------------------------------
+        // Point loads
+        // ---------------------------------------------------------------------
 
         .def(
             "add_point_load",
@@ -852,19 +984,19 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("mz") = 0.0,
             py::return_value_policy::reference_internal
         )
-        
         .def_property_readonly(
             "point_load_count",
             &carambola::Model::point_load_count
         )
-
-
         .def_property_readonly(
             "point_loads",
             &carambola::Model::point_loads,
             py::return_value_policy::reference_internal
         )
-        // Uniform beam loads.
+
+        // ---------------------------------------------------------------------
+        // Uniform beam loads
+        // ---------------------------------------------------------------------
 
         .def(
             "add_uniform_beam_load",
@@ -887,7 +1019,9 @@ PYBIND11_MODULE(_carambola, m)
             py::return_value_policy::reference_internal
         )
 
-        // Uniform shell pressure.
+        // ---------------------------------------------------------------------
+        // Uniform shell pressures
+        // ---------------------------------------------------------------------
 
         .def(
             "add_uniform_shell_pressure",
@@ -899,10 +1033,9 @@ PYBIND11_MODULE(_carambola, m)
         )
         .def_property_readonly(
             "uniform_shell_pressure_count",
-            &carambola::Model::uniform_shell_pressure_count
+            &carambola::Model::
+                uniform_shell_pressure_count
         )
-                
-
         .def_property_readonly(
             "uniform_shell_pressures",
             &carambola::Model::
@@ -910,8 +1043,9 @@ PYBIND11_MODULE(_carambola, m)
             py::return_value_policy::reference_internal
         )
 
-
-        // Lookup.
+        // ---------------------------------------------------------------------
+        // Lookup
+        // ---------------------------------------------------------------------
 
         .def(
             "node",
@@ -938,14 +1072,18 @@ PYBIND11_MODULE(_carambola, m)
             py::return_value_policy::reference_internal
         )
 
-        // Validation.
+        // ---------------------------------------------------------------------
+        // Validation
+        // ---------------------------------------------------------------------
 
         .def(
             "validate",
             &carambola::Model::validate
         )
 
-        // Connectivity queries.
+        // ---------------------------------------------------------------------
+        // Connectivity
+        // ---------------------------------------------------------------------
 
         .def(
             "trusses_at_node",
@@ -968,7 +1106,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("shell_id")
         )
 
-        // Mesh bridge.
+        // ---------------------------------------------------------------------
+        // Mesh bridge
+        // ---------------------------------------------------------------------
 
         .def(
             "add_shell_mesh",
@@ -977,7 +1117,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("property")
         )
 
-        // Bulk model extraction.
+        // ---------------------------------------------------------------------
+        // Bulk model extraction
+        // ---------------------------------------------------------------------
 
         .def(
             "node_coordinates",
@@ -1048,7 +1190,9 @@ PYBIND11_MODULE(_carambola, m)
             &carambola::AnalysisResult::reactions
         )
 
-        // Node results.
+        // ---------------------------------------------------------------------
+        // Node results
+        // ---------------------------------------------------------------------
 
         .def(
             "node_displacement",
@@ -1072,7 +1216,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("node")
         )
 
-        // Truss results.
+        // ---------------------------------------------------------------------
+        // Truss results
+        // ---------------------------------------------------------------------
 
         .def(
             "truss_deformation",
@@ -1099,7 +1245,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("truss")
         )
 
-        // Beam results.
+        // ---------------------------------------------------------------------
+        // Beam results
+        // ---------------------------------------------------------------------
 
         .def(
             "beam_local_end_forces",
@@ -1144,7 +1292,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("beam")
         )
 
-        // Shell membrane results.
+        // ---------------------------------------------------------------------
+        // Shell membrane results
+        // ---------------------------------------------------------------------
 
         .def(
             "shell_membrane_strain",
@@ -1159,7 +1309,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("shell")
         )
 
-        // Shell bending results.
+        // ---------------------------------------------------------------------
+        // Shell bending results
+        // ---------------------------------------------------------------------
 
         .def(
             "shell_bending_curvature",
@@ -1203,7 +1355,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("eta")
         )
 
-        // Combined shell surface stresses.
+        // ---------------------------------------------------------------------
+        // Combined shell surface stresses
+        // ---------------------------------------------------------------------
 
         .def(
             "shell_top_stress",
@@ -1222,7 +1376,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("eta")
         )
 
-        // Shell von Mises.
+        // ---------------------------------------------------------------------
+        // Shell von Mises
+        // ---------------------------------------------------------------------
 
         .def(
             "shell_top_von_mises",
@@ -1241,7 +1397,9 @@ PYBIND11_MODULE(_carambola, m)
             py::arg("eta")
         )
 
-        // Shell principal stresses.
+        // ---------------------------------------------------------------------
+        // Shell principal stresses
+        // ---------------------------------------------------------------------
 
         .def(
             "shell_top_principal_stresses",
@@ -1278,7 +1436,7 @@ PYBIND11_MODULE(_carambola, m)
 
 
     // -------------------------------------------------------------------------
-    // Linear static solver
+    // LinearStaticSolver
     // -------------------------------------------------------------------------
 
     py::class_<carambola::LinearStaticSolver>(
@@ -1295,3 +1453,4 @@ PYBIND11_MODULE(_carambola, m)
             &carambola::LinearStaticSolver::solve
         );
 }
+

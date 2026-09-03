@@ -65,6 +65,10 @@ def test_shell3d_public_api():
         "pressure_load_vector",
         "rotation_matrix",
         "stiffness_matrix",
+        "node_a",
+        "node_b",
+        "node_c",
+        "property",
     }
 
     assert public_names(cb.Shell3D) == expected

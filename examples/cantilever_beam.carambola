@@ -1,0 +1,76 @@
+{
+  "format": "carambola",
+  "version": 1,
+  "materials": [
+    {
+      "id": 0,
+      "name": "Steel",
+      "E": 210000000000.0,
+      "nu": 0.3,
+      "density": 7850.0
+    }
+  ],
+  "sections": [
+    {
+      "id": 0,
+      "type": "rectangular",
+      "width": 0.1,
+      "height": 0.2
+    }
+  ],
+  "shell_properties": [],
+  "nodes": [
+    {
+      "id": 0,
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    {
+      "id": 1,
+      "x": 2.0,
+      "y": 0.0,
+      "z": 0.0
+    }
+  ],
+  "trusses": [],
+  "beams": [
+    {
+      "id": 0,
+      "node_start": 0,
+      "node_end": 1,
+      "material": 0,
+      "section": 0,
+      "orientation": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "shells": [],
+  "supports": [
+    {
+      "node": 0,
+      "ux": true,
+      "uy": true,
+      "uz": true,
+      "rx": true,
+      "ry": true,
+      "rz": true
+    }
+  ],
+  "point_loads": [
+    {
+      "node": 1,
+      "fx": 0.0,
+      "fy": 0.0,
+      "fz": -1000.0,
+      "mx": 0.0,
+      "my": 0.0,
+      "mz": 0.0
+    }
+  ],
+  "uniform_beam_loads": [],
+  "uniform_shell_pressures": []
+}
