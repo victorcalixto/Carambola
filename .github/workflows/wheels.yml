@@ -31,12 +31,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install cibuildwheel
 
-      - name: Install Eigen on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libeigen3-dev
-
       - name: Install Eigen on macOS
         if: runner.os == 'macOS'
         run: |
@@ -52,10 +46,14 @@ jobs:
       - name: Build wheels
         env:
           CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
+
           CIBW_SKIP: "*-musllinux* *-win32"
 
           CIBW_ARCHS_LINUX: "x86_64"
           CIBW_ARCHS_WINDOWS: "AMD64"
+
+          CIBW_BEFORE_ALL_LINUX: >
+            dnf install -y eigen3-devel
 
           CIBW_TEST_COMMAND: >
             python -c "import carambola; print('Carambola:', carambola.version())"

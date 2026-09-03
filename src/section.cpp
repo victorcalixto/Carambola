@@ -3,6 +3,12 @@
 #include <cmath>
 #include <stdexcept>
 
+
+namespace {
+constexpr double PI = 3.141592653589793238462643383279502884;
+}
+
+
 namespace carambola {
 
 Section::Section(
@@ -82,10 +88,10 @@ double RectangularSection::height() const
 
 CircularSection::CircularSection(double radius)
     : Section(
-          M_PI * radius * radius,
-          M_PI * std::pow(radius, 4) / 4.0,
-          M_PI * std::pow(radius, 4) / 4.0,
-          M_PI * std::pow(radius, 4) / 2.0
+          PI  * radius * radius,
+          PI  * std::pow(radius, 4) / 4.0,
+          PI  * std::pow(radius, 4) / 4.0,
+          PI  * std::pow(radius, 4) / 2.0
       ),
       radius_(radius)
 {
