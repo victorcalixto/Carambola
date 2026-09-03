@@ -25,12 +25,26 @@ jobs:
       - name: Build wheels
         env:
           CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
+
           CIBW_ARCHS_LINUX: "x86_64"
+
           CIBW_BEFORE_ALL_LINUX: >
-            dnf install -y eigen3-devel
+            echo "=== OS ===" &&
+            cat /etc/os-release &&
+            echo "=== PATH ===" &&
+            echo "$PATH" &&
+            echo "=== package managers ===" &&
+            command -v dnf || true &&
+            command -v yum || true &&
+            command -v microdnf || true &&
+            command -v apt-get || true &&
+            command -v apk || true
+
           CIBW_TEST_REQUIRES: "pytest"
+
           CIBW_TEST_COMMAND: >
             python -c "import carambola; print('Carambola:', carambola.version())"
+
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
