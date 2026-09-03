@@ -7,15 +7,55 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "carambola"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Open-source structural FEM toolkit for computational design"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "GPL-3.0-or-later" }
+
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE*"]
+
+
+dependencies = [
+    "numpy>=1.23",
+]
+
+
+keywords = [
+    "finite-element-method",
+    "fem",
+    "structural-analysis",
+    "computational-design",
+    "structural-engineering",
+    "blender",
+    "sverchok",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.scripts]
+carambola = "carambola.cli:main"
+
+[project.urls]
+Repository = "https://github.com/victorcalixto/Carambola"
+Issues = "https://github.com/victorcalixto/Carambola/issues"
 
 [tool.scikit-build]
 cmake.build-type = "Release"
 wheel.packages = ["carambola"]
+
+sdist.exclude = [
+    "examples/*.carambola-result",
+]
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
