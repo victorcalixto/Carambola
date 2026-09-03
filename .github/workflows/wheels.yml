@@ -29,16 +29,7 @@ jobs:
           CIBW_ARCHS_LINUX: "x86_64"
 
           CIBW_BEFORE_ALL_LINUX: >
-            echo "=== OS ===" &&
-            cat /etc/os-release &&
-            echo "=== PATH ===" &&
-            echo "$PATH" &&
-            echo "=== package managers ===" &&
-            command -v dnf || true &&
-            command -v yum || true &&
-            command -v microdnf || true &&
-            command -v apt-get || true &&
-            command -v apk || true
+            /usr/bin/dnf install -y eigen3-devel
 
           CIBW_TEST_REQUIRES: "pytest"
 
