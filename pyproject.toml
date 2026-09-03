@@ -7,7 +7,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "carambola"
-version = "0.1.0"
+version = "0.1.1"
 description = "Open-source structural FEM toolkit for computational design"
 readme = "README.md"
 requires-python = ">=3.10"

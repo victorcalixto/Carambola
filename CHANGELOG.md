@@ -2,6 +2,15 @@
 
 All notable changes to Carambola are documented in this file.
 
+## [0.1.1] - 2026-09-03
+
+### Fixed
+
+- Declare SciPy as a runtime dependency for sparse matrix interoperability.
+- Add CI validation for Python 3.10 through 3.14.
+
+
+
 ## [0.1.0] - 2026-09-03
 
 ### Added
